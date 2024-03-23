@@ -1,2 +1,0 @@
-# bk-client
-bookkeeping frontend
