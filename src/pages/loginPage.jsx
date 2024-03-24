@@ -7,7 +7,7 @@ export default function LoginPage() {
   return (
     <>
       <Helmet>
-        <title> Login | EREngineers </title>
+        <title> Login | BookKeep </title>
       </Helmet>
 
       <LoginView />

@@ -7,6 +7,9 @@ export const NAVIGATION_ROUTES = {
   all_path: '*',
 
   // main routes
-  dashboard: 'dashboard',
+  dashboard: 'dashboard/overview',
   employees: 'employees',
+  creditors: 'creditors',
+  salesBooks: 'salesBooks',
+  settings: 'settings',
 };

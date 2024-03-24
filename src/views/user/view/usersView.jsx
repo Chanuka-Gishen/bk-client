@@ -13,7 +13,7 @@ export const UsersView = ({}) => {
           variant="contained"
           color="inherit"
           startIcon={<Iconify icon="eva:plus-fill" />}
-          onClick={bull}
+          onClick={null}
         >
           Add
         </Button>

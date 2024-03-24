@@ -99,7 +99,7 @@ const Profile = () => {
         <Stack direction="row" spacing={2} alignItems="center" sx={{ p: 0.5 }}>
           <Avatar
             alt="profile user"
-            src={'assets/images/avatars/avatar_25.jpg'}
+            src={'/assets/images/avatars/avatar_25.jpg'}
             sx={{ width: 32, height: 32 }}
           />
           <Typography variant="subtitle1">{user.name}</Typography>
@@ -145,7 +145,7 @@ const Profile = () => {
                           <Stack direction="row" spacing={1.25} alignItems="center">
                             <Avatar
                               alt="profile user"
-                              src={'assets/images/avatars/avatar_25.jpg'}
+                              src={'/assets/images/avatars/avatar_25.jpg'}
                               sx={{ width: 32, height: 32 }}
                             />
                             <Stack>

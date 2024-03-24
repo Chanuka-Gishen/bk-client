@@ -14,6 +14,7 @@ import {
   Typography,
 } from '@mui/material';
 import menuAction from 'src/store/action/menuAction';
+import GridViewIcon from '@mui/icons-material/GridView';
 
 // project import
 
@@ -134,15 +135,6 @@ const NavItem = ({ item, level }) => {
               {item.title}
             </Typography>
           }
-        />
-      )}
-      {(drawerOpen || (!drawerOpen && level !== 1)) && item.chip && (
-        <Chip
-          color={item.chip.color}
-          variant={item.chip.variant}
-          size={item.chip.size}
-          label={item.chip.label}
-          avatar={item.chip.avatar && <Avatar>{item.chip.avatar}</Avatar>}
         />
       )}
     </ListItemButton>

@@ -11,11 +11,11 @@ const NavGroup = ({ item }) => {
   const menu = useSelector((state) => state.menu);
   const { drawerOpen } = menu;
 
-  const navCollapse = item.children?.map((menuItem) => (
-    <NavItem key={menuItem.id} item={menuItem} level={1} />
-  ));
-
-  return <List sx={{ mb: drawerOpen ? 1.5 : 0, py: 0, zIndex: 0 }}>{navCollapse}</List>;
+  return (
+    <List sx={{ mb: drawerOpen ? 1.5 : 0, py: 0, zIndex: 0 }}>
+      <NavItem key={item.id} item={item} level={1} />
+    </List>
+  );
 };
 
 NavGroup.propTypes = {

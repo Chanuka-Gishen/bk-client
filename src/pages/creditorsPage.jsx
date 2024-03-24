@@ -1,17 +1,16 @@
 import { Helmet } from 'react-helmet-async';
-
-import { Dashboard } from 'src/views/dashboard';
+import { Creditor } from 'src/views/creditor';
 
 // ----------------------------------------------------------------------
 
-export default function DashboardPage() {
+export default function CreditorsPage() {
   return (
     <>
       <Helmet>
-        <title> Dashboard | BookKeep </title>
+        <title> Creditors | BookKeep </title>
       </Helmet>
 
-      <Dashboard />
+      <Creditor />
     </>
   );
 }

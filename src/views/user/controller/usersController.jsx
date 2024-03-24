@@ -15,19 +15,25 @@ import { SNACKBAR_MESSAGE, SNACKBAR_VARIANT } from 'src/constants/snackbarConsta
 //---------------------------------------------------------
 
 const validationSchema = Yup.object().shape({
-  empFirstName: Yup.string().required('User first name is required'),
-  empLastName: Yup.string().required('User last name is required'),
+  empFirstName: Yup.string().required('Employee first name is required'),
+  empLastName: Yup.string().required('Employee last name is required'),
   empRole: Yup.string()
-    .required('User role required')
-    .oneOf([USER_ROLE.ADMIN, USER_ROLE.TECHNICIAN, USER_ROLE.HELPER], 'Invalid user role'),
+    .required('Employee role required')
+    .oneOf(
+      [USER_ROLE.ADMIN_ROLE, USER_ROLE.MANAGER_ROLE, USER_ROLE.STAFF_ROLE],
+      'Invalid Employee role'
+    ),
 });
 
 const validationSchemaOnUpdate = Yup.object().shape({
-  empFirstName: Yup.string().required('User first name is required'),
-  empLastName: Yup.string().required('User last name is required'),
+  empFirstName: Yup.string().required('Employee first name is required'),
+  empLastName: Yup.string().required('Employee last name is required'),
   empRole: Yup.string()
-    .required('User role required')
-    .oneOf([USER_ROLE.ADMIN, USER_ROLE.TECHNICIAN, USER_ROLE.HELPER], 'Invalid user role'),
+    .required('Employee role required')
+    .oneOf(
+      [USER_ROLE.ADMIN_ROLE, USER_ROLE.MANAGER_ROLE, USER_ROLE.STAFF_ROLE],
+      'Invalid Employee role'
+    ),
 });
 
 const UsersController = () => {

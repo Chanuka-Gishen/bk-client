@@ -8,6 +8,9 @@ import { Navigate } from 'react-router-dom';
 
 // render - dashboard
 const Dashboard = lazy(() => import('src/pages/dashboardPage'));
+const CreditorsPage = lazy(() => import('src/pages/creditorsPage'));
+const SalesBooksPage = lazy(() => import('src/pages/salesBookPage'));
+const EmployeesPage = lazy(() => import('src/pages/employeesPage'));
 
 const MainRoutes = () => {
   const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
@@ -18,6 +21,9 @@ const MainRoutes = () => {
     children: [
       { path: '/', element: <Navigate to={NAVIGATION_ROUTES.dashboard} replace /> },
       { path: NAVIGATION_ROUTES.dashboard, element: <Dashboard /> },
+      { path: NAVIGATION_ROUTES.creditors, element: <CreditorsPage /> },
+      { path: NAVIGATION_ROUTES.employees, element: <EmployeesPage /> },
+      { path: NAVIGATION_ROUTES.salesBooks, element: <SalesBooksPage /> },
     ],
   };
 };

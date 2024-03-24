@@ -7,7 +7,7 @@ export default function EmployeesPage() {
   return (
     <>
       <Helmet>
-        <title> Employees | EREngineers </title>
+        <title> Employees | BookKeep </title>
       </Helmet>
 
       <Users />

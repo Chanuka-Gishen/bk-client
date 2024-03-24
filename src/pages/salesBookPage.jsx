@@ -1,17 +1,16 @@
 import { Helmet } from 'react-helmet-async';
-
-import { Dashboard } from 'src/views/dashboard';
+import { SalesBook } from 'src/views/salesBooks';
 
 // ----------------------------------------------------------------------
 
-export default function DashboardPage() {
+export default function SalesBooksPage() {
   return (
     <>
       <Helmet>
-        <title> Dashboard | BookKeep </title>
+        <title> SalesBooks | BookKeep </title>
       </Helmet>
 
-      <Dashboard />
+      <SalesBook />
     </>
   );
 }
