@@ -18,12 +18,13 @@ import {
 import { FormikProvider } from 'formik';
 import { USER_ROLE } from 'src/constants/userRole';
 import { LoadingButton } from '@mui/lab';
+import { USER_STATUS } from 'src/constants/commonConstants';
 
 export const UpdateEmployeeDialog = ({ open, handleClose, formik, handleSubmit, isLoading }) => {
   const { touched, errors, getFieldProps } = formik;
 
   return (
-    <Dialog open={open} onClose={handleClose} fullWidth sx={{ px: 2 }}>
+    <Dialog open={open} onClose={() => handleClose(null)} fullWidth sx={{ px: 2 }}>
       <DialogTitle>Update Employee</DialogTitle>
       <DialogContent>
         <FormikProvider value={formik}>
@@ -32,39 +33,54 @@ export const UpdateEmployeeDialog = ({ open, handleClose, formik, handleSubmit, 
               label="Employee First Name*"
               fullWidth
               variant="outlined"
-              {...getFieldProps('userFirstName')}
-              error={Boolean(touched.userFirstName && errors.userFirstName)}
-              helperText={touched.userFirstName && errors.userFirstName}
+              {...getFieldProps('empFirstName')}
+              error={Boolean(touched.empFirstName && errors.empFirstName)}
+              helperText={touched.empFirstName && errors.empFirstName}
             />
             <TextField
               label="Employee Last Name*"
               fullWidth
               variant="outlined"
-              {...getFieldProps('userLastName')}
-              error={Boolean(touched.userLastName && errors.userLastName)}
-              helperText={touched.userLastName && errors.userLastName}
+              {...getFieldProps('empLastName')}
+              error={Boolean(touched.empLastName && errors.empLastName)}
+              helperText={touched.empLastName && errors.empLastName}
             />
             <FormControl>
-              <InputLabel id="select-label">User Role*</InputLabel>
+              <InputLabel id="select-label">Employee Role*</InputLabel>
               <Select
                 labelId="select-label"
                 id="select"
-                label="User Role"
-                {...getFieldProps('userRole')}
+                label="Employee Role"
+                {...getFieldProps('empRole')}
               >
-                <MenuItem value={USER_ROLE.ADMIN}>Admin</MenuItem>
-                <MenuItem value={USER_ROLE.TECHNICIAN}>Technician</MenuItem>
-                <MenuItem value={USER_ROLE.HELPER}>Helper</MenuItem>
+                <MenuItem value={USER_ROLE.ADMIN_ROLE}>Admin</MenuItem>
+                <MenuItem value={USER_ROLE.MANAGER_ROLE}>Manager</MenuItem>
+                <MenuItem value={USER_ROLE.STAFF_ROLE}>Staff</MenuItem>
               </Select>
-              {Boolean(touched.userLastName && errors.userLastName) && (
-                <FormHelperText>{touched.userLastName && errors.userLastName}</FormHelperText>
+              {Boolean(touched.empRole && errors.empRole) && (
+                <FormHelperText error>{touched.empRole && errors.empRole}</FormHelperText>
+              )}
+            </FormControl>
+            <FormControl>
+              <InputLabel id="select-label">Employee Status*</InputLabel>
+              <Select
+                labelId="select-label"
+                id="select"
+                label="Employee Status"
+                {...getFieldProps('empIsActive')}
+              >
+                <MenuItem value={true}>Active</MenuItem>
+                <MenuItem value={false}>Terminated</MenuItem>
+              </Select>
+              {Boolean(touched.empIsActive && errors.empIsActive) && (
+                <FormHelperText error>{touched.empIsActive && errors.empIsActive}</FormHelperText>
               )}
             </FormControl>
           </Stack>
         </FormikProvider>
       </DialogContent>
       <DialogActions>
-        <Button onClick={handleClose}>Cancel</Button>
+        <Button onClick={() => handleClose(null)}>Cancel</Button>
         <LoadingButton
           variant="contained"
           color="inherit"

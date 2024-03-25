@@ -13,19 +13,21 @@ import Iconify from 'src/components/iconify';
 import { useSelector } from 'react-redux';
 import { USER_STATUS } from 'src/constants/commonConstants';
 
-export const UsersTableRow = ({
+export const EmpRow = ({
   employee,
+  setSelectedEmp,
   handleOpenUpdateDialog,
-  handleOpenDeleteDialog,
   handleOpenResetConfirmation,
 }) => {
   const [open, setOpen] = useState(null);
 
   const handleOpenMenu = (event) => {
+    setSelectedEmp(employee);
     setOpen(event.currentTarget);
   };
 
   const handleCloseMenu = () => {
+    setSelectedEmp(null);
     setOpen(null);
   };
 
@@ -36,25 +38,23 @@ export const UsersTableRow = ({
       <TableRow hover>
         <TableCell component="th">
           <Typography variant="subtitle2" noWrap>
-            {employee.userFullName}
+            {`${employee.empFirstName} ${employee.empLastName}`}
           </Typography>
         </TableCell>
-        <TableCell>{employee.userName}</TableCell>
+        <TableCell>{employee.empUserName}</TableCell>
         <TableCell>
-          <Chip label={employee.userRole} color="success" />
+          <Chip label={employee.empRole} color="success" />
         </TableCell>
         <TableCell>
           <Chip
-            label={employee.userIsActive ? USER_STATUS.ACTIVE : USER_STATUS.Terminated}
-            color={employee.userIsActive ? 'success' : 'error'}
+            label={employee.empIsActive ? USER_STATUS.ACTIVE : USER_STATUS.INACTIVE}
+            color={employee.empIsActive ? 'success' : 'error'}
           />
         </TableCell>
         <TableCell align="right">
-          {user.id === employee._id ? null : (
-            <IconButton onClick={handleOpenMenu}>
-              <Iconify icon="eva:more-vertical-fill" />
-            </IconButton>
-          )}
+          <IconButton onClick={handleOpenMenu}>
+            <Iconify icon="eva:more-vertical-fill" />
+          </IconButton>
         </TableCell>
       </TableRow>
       <Popover
@@ -73,25 +73,17 @@ export const UsersTableRow = ({
         </MenuItem>
         <MenuItem
           onClick={() => handleOpenResetConfirmation(employee)}
-          disabled={!employee.userIsActive}
+          disabled={!employee.empIsActive}
         >
           <Iconify icon="eva:refresh-fill" sx={{ mr: 2 }} />
           Reset Password
-        </MenuItem>
-        <MenuItem
-          onClick={() => handleOpenDeleteDialog(employee)}
-          sx={{ color: 'error.main' }}
-          disabled={!employee.userIsActive}
-        >
-          <Iconify icon="eva:trash-2-outline" sx={{ mr: 2 }} />
-          Terminate
         </MenuItem>
       </Popover>
     </>
   );
 };
 
-UsersTableRow.propTypes = {
+EmpRow.propTypes = {
   employee: PropTypes.object.isRequired,
   handleOpenUpdateDialog: PropTypes.func.isRequired,
   handleOpenResetConfirmation: PropTypes.func.isRequired,

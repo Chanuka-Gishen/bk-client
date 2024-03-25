@@ -39,18 +39,18 @@ export const AddEmployeeDialog = ({
               fullWidth
               autoComplete="off"
               variant="outlined"
-              {...getFieldProps('userFirstName')}
-              error={Boolean(touched.userFirstName && errors.userFirstName)}
-              helperText={touched.userFirstName && errors.userFirstName}
+              {...getFieldProps('empFirstName')}
+              error={Boolean(touched.empFirstName && errors.empFirstName)}
+              helperText={touched.empFirstName && errors.empFirstName}
             />
             <TextField
               label="Employee Last Name*"
               fullWidth
               autoComplete="off"
               variant="outlined"
-              {...getFieldProps('userLastName')}
-              error={Boolean(touched.userLastName && errors.userLastName)}
-              helperText={touched.userLastName && errors.userLastName}
+              {...getFieldProps('empLastName')}
+              error={Boolean(touched.empLastName && errors.empLastName)}
+              helperText={touched.empLastName && errors.empLastName}
             />
             <FormControl>
               <InputLabel id="select-label">User Role*</InputLabel>
@@ -58,14 +58,14 @@ export const AddEmployeeDialog = ({
                 labelId="select-label"
                 id="select"
                 label="User Role"
-                {...getFieldProps('userRole')}
+                {...getFieldProps('empRole')}
               >
-                <MenuItem value={USER_ROLE.ADMIN}>Admin</MenuItem>
-                <MenuItem value={USER_ROLE.TECHNICIAN}>Technician</MenuItem>
-                <MenuItem value={USER_ROLE.HELPER}>Helper</MenuItem>
+                <MenuItem value={USER_ROLE.ADMIN_ROLE}>Admin</MenuItem>
+                <MenuItem value={USER_ROLE.MANAGER_ROLE}>Manager</MenuItem>
+                <MenuItem value={USER_ROLE.STAFF_ROLE}>Staff</MenuItem>
               </Select>
-              {Boolean(touched.userRole && errors.userRole) && (
-                <FormHelperText>{touched.userRole && errors.userRole}</FormHelperText>
+              {Boolean(touched.empRole && errors.empRole) && (
+                <FormHelperText error>{touched.empRole && errors.empRole}</FormHelperText>
               )}
             </FormControl>
           </Stack>

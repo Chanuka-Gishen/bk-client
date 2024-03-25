@@ -40,7 +40,6 @@ backendAuthApi.interceptors.response.use(
           errorMessage = errorResponse.responseMessage;
           errorCode = errorResponse.responseCode;
         }
-
         /**
          * Logout user if the response code matches the below mentioned
          * AUTH-002 is returned if user's token is expired
@@ -49,9 +48,18 @@ backendAuthApi.interceptors.response.use(
          */
 
         if (errorResponse.responseCode === 'AUTH-004') {
-          const dispath = useDispatch();
+          reduxPersistStore.dispatch(authAction.logoutUser());
 
-          dispath(authAction.logoutUser());
+          enqueueSnackbar({
+            message: errorMessage,
+            options: {
+              key: uuid(),
+              variant: errorCode
+                ? responseUtil.findResponseType(errorCode)
+                : SNACKBAR_MESSAGE.SOMETHING_WENT_WRONG.VARIANT,
+            },
+          });
+
           return;
         }
       }

@@ -149,7 +149,7 @@ const Profile = () => {
                               sx={{ width: 32, height: 32 }}
                             />
                             <Stack>
-                              <Typography variant="h6">{user.name}</Typography>
+                              <Typography variant="h7">{user.name}</Typography>
                               <Typography variant="body2" color="textSecondary">
                                 {user.userRole.toUpperCase()}
                               </Typography>

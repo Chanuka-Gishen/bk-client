@@ -2,8 +2,8 @@ import PropTypes from 'prop-types';
 import { useMemo } from 'react';
 
 // material-ui
-import { CssBaseline } from '@mui/material';
-import { createTheme, ThemeProvider as MUIThemeProvider } from '@mui/material/styles';
+import { CssBaseline, StyledEngineProvider } from '@mui/material';
+import { createTheme, ThemeProvider as MuiThemeProvider } from '@mui/material/styles';
 
 // project import
 import Palette from './palette';
@@ -50,10 +50,12 @@ export default function ThemeProvider({ children }) {
   themes.components = componentsOverride(themes);
 
   return (
-    <MUIThemeProvider theme={themes}>
-      <CssBaseline />
-      {children}
-    </MUIThemeProvider>
+    <StyledEngineProvider injectFirst>
+      <MuiThemeProvider theme={themes}>
+        <CssBaseline />
+        {children}
+      </MuiThemeProvider>
+    </StyledEngineProvider>
   );
 }
 
