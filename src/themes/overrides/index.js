@@ -26,7 +26,7 @@ export default function ComponentsOverrides(theme) {
     Badge(theme),
     CardContent(),
     Checkbox(theme),
-    Chip(theme),
+    //Chip(theme),
     IconButton(theme),
     InputLabel(theme),
     LinearProgress(),

@@ -7,14 +7,15 @@ export default function TableCell(theme) {
         root: {
           fontSize: '0.875rem',
           padding: 12,
-          borderColor: theme.palette.divider
+          border: 'none',
         },
         head: {
           fontWeight: 600,
           paddingTop: 20,
-          paddingBottom: 20
-        }
-      }
-    }
+          paddingBottom: 20,
+          backgroundColor: theme.palette.grey[200],
+        },
+      },
+    },
   };
 }

@@ -29,28 +29,20 @@ TextMaskCustom.propTypes = {
   onChange: PropTypes.func.isRequired,
 };
 
-export const MobileNumberInput = ({
-  name,
-  value,
-  onChange,
-  handleBlur,
-  error,
-  helperText,
-  ...props
-}) => {
+export const MobileNumberInput = ({ name, label, error, helperText, ...props }) => {
   return (
     <TextField
-      label="Customer Mobile Number"
+      label={label ? label : 'Customer Mobile Number'}
       name={name}
       fullWidth
       variant="outlined"
-      value={value}
-      onChange={onChange}
-      onBlur={handleBlur}
+      {...props}
       InputProps={{
         inputComponent: TextMaskCustom,
         startAdornment: <InputAdornment position="start">+94</InputAdornment>,
       }}
+      error={error}
+      helperText={helperText}
     />
   );
 };

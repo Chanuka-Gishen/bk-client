@@ -5,6 +5,7 @@ import MainLayout from 'src/layout/MainLayout';
 import { NAVIGATION_ROUTES } from './constants/navigationRoutes';
 import { useSelector } from 'react-redux';
 import { Navigate } from 'react-router-dom';
+import CreditorDetailsPage from 'src/pages/creditorDetailsPage';
 
 // render - dashboard
 const Dashboard = lazy(() => import('src/pages/dashboardPage'));
@@ -21,7 +22,8 @@ const MainRoutes = () => {
     children: [
       { path: '/', element: <Navigate to={NAVIGATION_ROUTES.dashboard} replace /> },
       { path: NAVIGATION_ROUTES.dashboard, element: <Dashboard /> },
-      { path: NAVIGATION_ROUTES.creditors, element: <CreditorsPage /> },
+      { path: NAVIGATION_ROUTES.creditors.list, element: <CreditorsPage /> },
+      { path: NAVIGATION_ROUTES.creditors.details.id, element: <CreditorDetailsPage /> },
       { path: NAVIGATION_ROUTES.employees, element: <EmployeesPage /> },
       { path: NAVIGATION_ROUTES.salesBooks, element: <SalesBooksPage /> },
     ],

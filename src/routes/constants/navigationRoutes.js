@@ -9,7 +9,14 @@ export const NAVIGATION_ROUTES = {
   // main routes
   dashboard: 'dashboard/overview',
   employees: 'employees',
-  creditors: 'creditors',
+  creditors: {
+    base: '/creditors',
+    list: 'creditors',
+    details: {
+      base: '/creditors/',
+      id: 'creditors/:id',
+    },
+  },
   salesBooks: 'salesBooks',
   settings: 'settings',
 };

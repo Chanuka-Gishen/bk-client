@@ -20,7 +20,7 @@ const menuItems = [
     id: 'creditors',
     title: 'Creditors',
     type: 'item',
-    url: NAVIGATION_ROUTES.creditors,
+    url: NAVIGATION_ROUTES.creditors.list,
     icon: icons.BankOutlined,
   },
   {

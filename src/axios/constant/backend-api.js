@@ -14,4 +14,12 @@ export const BACKEND_API = {
 
   SBOOK_CREATE: IP_URL + 'sales-book/create',
   SBOOK_GET_ALL: IP_URL + 'sales-book/',
+
+  CREDITOR_CREATE: IP_URL + 'creditor/create',
+  CREDITOR_UPDATE: IP_URL + 'creditor/update',
+  CREDITOR_LIST: IP_URL + 'creditor/all',
+  CREDITOR_DETAILS: IP_URL + 'creditor/details/',
+  CREDITOR_INVOICES: IP_URL + 'credInvoice/creditor/',
+  CREDITOR_ADD_INVOICE: IP_URL + 'credInvoice/add',
+  CREDITOR_UPDATE_INVOICE: IP_URL + 'credInvoice/update',
 };
