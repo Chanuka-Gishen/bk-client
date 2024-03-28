@@ -104,16 +104,18 @@ export const CreditorView = ({
                     <>
                       {creditors.length > 0 ? (
                         <>
-                          {filteredData.map((item, index) => (
-                            <CreditorRow
-                              key={index}
-                              creditor={item}
-                              handleOnClickRow={handleOnClickRow}
-                              handleOpenUpdateDialog={handleOpenCloseCreditorAdd}
-                              handleOpenCloseInvoiceDialog={handleOpenCloseInvoiceDialog}
-                              setSelectedCreditor={setSelectedCreditor}
-                            />
-                          ))}
+                          {filteredData
+                            .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                            .map((item, index) => (
+                              <CreditorRow
+                                key={index}
+                                creditor={item}
+                                handleOnClickRow={handleOnClickRow}
+                                handleOpenUpdateDialog={handleOpenCloseCreditorAdd}
+                                handleOpenCloseInvoiceDialog={handleOpenCloseInvoiceDialog}
+                                setSelectedCreditor={setSelectedCreditor}
+                              />
+                            ))}
                           {filteredData.length === 0 && creditors.length != 0 && (
                             <TableRow>
                               <TableCell

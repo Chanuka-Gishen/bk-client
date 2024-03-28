@@ -85,15 +85,17 @@ export const UsersView = ({
                           <TableEmptyRow colSpan={headerLables.length} />
                         ) : (
                           <>
-                            {employees.map((emp, index) => (
-                              <EmpRow
-                                key={index}
-                                employee={emp}
-                                setSelectedEmp={setSelectedEmp}
-                                handleOpenUpdateDialog={handleOpenCloseUpdateDialog}
-                                handleOpenResetConfirmation={handleOpenCloseResetDialog}
-                              />
-                            ))}
+                            {employees
+                              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                              .map((emp, index) => (
+                                <EmpRow
+                                  key={index}
+                                  employee={emp}
+                                  setSelectedEmp={setSelectedEmp}
+                                  handleOpenUpdateDialog={handleOpenCloseUpdateDialog}
+                                  handleOpenResetConfirmation={handleOpenCloseResetDialog}
+                                />
+                              ))}
                           </>
                         )}
                       </>

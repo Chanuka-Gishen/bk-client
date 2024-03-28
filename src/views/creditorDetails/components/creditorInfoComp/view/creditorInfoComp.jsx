@@ -36,7 +36,7 @@ export const CreditorInforCompView = ({ creditor, isLoading }) => {
                 {isLoading
                   ? 'Loading...'
                   : creditor.creditorOrganization
-                    ? creditorOrganization
+                    ? creditor.creditorOrganization
                     : ' - '}
               </TableCell>
             </TableRow>
