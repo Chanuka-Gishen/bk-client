@@ -12,6 +12,7 @@ const Dashboard = lazy(() => import('src/pages/dashboardPage'));
 const CreditorsPage = lazy(() => import('src/pages/creditorsPage'));
 const SalesBooksPage = lazy(() => import('src/pages/salesBookPage'));
 const EmployeesPage = lazy(() => import('src/pages/employeesPage'));
+const PaymentsPage = lazy(() => import('src/pages/paymentsPage'));
 
 const MainRoutes = () => {
   const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
@@ -26,6 +27,7 @@ const MainRoutes = () => {
       { path: NAVIGATION_ROUTES.creditors.details.id, element: <CreditorDetailsPage /> },
       { path: NAVIGATION_ROUTES.employees, element: <EmployeesPage /> },
       { path: NAVIGATION_ROUTES.salesBooks, element: <SalesBooksPage /> },
+      { path: NAVIGATION_ROUTES.payments.view, element: <PaymentsPage /> },
     ],
   };
 };

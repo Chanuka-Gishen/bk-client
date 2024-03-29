@@ -1,4 +1,10 @@
-import { DashboardOutlined, BankOutlined, IdcardOutlined, ReadOutlined } from '@ant-design/icons';
+import {
+  DashboardOutlined,
+  BankOutlined,
+  IdcardOutlined,
+  ReadOutlined,
+  DollarOutlined,
+} from '@ant-design/icons';
 import { NAVIGATION_ROUTES } from 'src/routes/constants/navigationRoutes';
 
 const icons = {
@@ -6,6 +12,7 @@ const icons = {
   BankOutlined,
   IdcardOutlined,
   ReadOutlined,
+  DollarOutlined,
 };
 
 const menuItems = [
@@ -29,6 +36,13 @@ const menuItems = [
     type: 'item',
     url: NAVIGATION_ROUTES.salesBooks,
     icon: icons.ReadOutlined,
+  },
+  {
+    id: 'payments',
+    title: 'Payments',
+    type: 'item',
+    url: NAVIGATION_ROUTES.payments.base,
+    icon: icons.DollarOutlined,
   },
   {
     id: 'employees',

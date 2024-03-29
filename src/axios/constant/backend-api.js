@@ -32,4 +32,9 @@ export const BACKEND_API = {
   INVOICE_DELETE: IP_URL + 'invoice/delete/',
   INVOICE_BY_BOOK: IP_URL + 'invoice/book/',
   INVOICE_BULK: IP_URL + 'invoice/bulk-invoices/',
+
+  PAYMENT_ADD: IP_URL + 'payment/add',
+  PAYMENT_UPDATE: IP_URL + 'payment/update',
+  PAYMENT_DELETE: IP_URL + 'payment/delete/',
+  PAYMENTS: IP_URL + 'payment/invoices',
 };

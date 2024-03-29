@@ -19,4 +19,8 @@ export const NAVIGATION_ROUTES = {
   },
   salesBooks: 'salesBooks',
   settings: 'settings',
+  payments: {
+    base: '/payments',
+    view: 'payments',
+  },
 };

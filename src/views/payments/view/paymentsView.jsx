@@ -1,19 +1,17 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-
 import {
   Button,
   Card,
+  Container,
   Grid,
   InputAdornment,
   OutlinedInput,
   Stack,
   Table,
   TableBody,
-  TableCell,
   TableContainer,
   TablePagination,
-  TableRow,
   Toolbar,
   Typography,
   useMediaQuery,
@@ -21,25 +19,35 @@ import {
 } from '@mui/material';
 import { Add } from '@mui/icons-material';
 import SearchIcon from '@mui/icons-material/Search';
-import { AddCreditorDialog } from '../component/addCreditorDialog';
 import { CustomTableHead } from 'src/components/custom-table/custom-table-head';
 import TableLoadingRow from 'src/components/custom-table/table-loading-row';
 import TableEmptyRow from 'src/components/custom-table/table-empty-row';
-import { CreditorRow } from '../component/creditorRow';
+import { PaymentRow } from '../components/paymentRow';
+import { AddPaymentDialog } from '../components/addPaymentDialog';
+import { UpdatePaymentDialog } from '../components/updatePaymentDialog';
+import ConfirmationDialog from 'src/components/confirmation-dialog/confirmation-dialog';
 
-export const CreditorView = ({
+export const PaymentsView = ({
   headerLabels,
-  isLoading,
-  creditors,
+  invoices,
   searchTerm,
   handleSearchInputChange,
   filteredData,
-  handleOnClickRow,
-  isOpenCreditorAdd,
+  isLoading,
   formik,
-  handleOpenCloseCreditorAdd,
-  isLoadingCreditorAdd,
-  handleAddCreditor,
+  isOpenAdd,
+  isOpenUpdate,
+  isOpenDelete,
+  isLoadingAdd,
+  isLoadingUpdate,
+  isLoadingDelete,
+  setSelectedInvoice,
+  handleOpenCloseAddDialog,
+  handleOpenCloseUpdateDialog,
+  handleOpenCloseDeleteDialog,
+  handleSubmitAdd,
+  handleSubmitUpdate,
+  handleSubmitDelete,
   page,
   rowsPerPage,
   handleChangePage,
@@ -52,13 +60,9 @@ export const CreditorView = ({
       <Grid container columnSpacing={2} rowSpacing={4}>
         <Grid item xs={12} sm={12}>
           <Stack direction="row" spacing={2} justifyContent="space-between" alignItems="center">
-            <Typography variant="h4">Manage Creditors</Typography>
-            <Button
-              variant="contained"
-              startIcon={<Add />}
-              onClick={() => handleOpenCloseCreditorAdd(null)}
-            >
-              Add Creditor
+            <Typography variant="h4">Manage Payments</Typography>
+            <Button variant="contained" startIcon={<Add />} onClick={handleOpenCloseAddDialog}>
+              Add Payment
             </Button>
           </Stack>
         </Grid>
@@ -75,7 +79,7 @@ export const CreditorView = ({
               <OutlinedInput
                 value={searchTerm}
                 onChange={handleSearchInputChange}
-                placeholder="Search customer name..."
+                placeholder="Search description..."
                 startAdornment={
                   <InputAdornment position="start">
                     <SearchIcon sx={{ color: 'text.disabled', width: 20, height: 20 }} />
@@ -85,34 +89,28 @@ export const CreditorView = ({
             </Toolbar>
             <TableContainer sx={{ overflow: matchDownMD ? 'scroll' : 'unset' }}>
               <Table sx={{ minWidth: 800 }}>
-                <CustomTableHead enableAction={false} headLabel={headerLabels} />
+                <CustomTableHead headLabel={headerLabels} />
                 <TableBody>
                   {isLoading ? (
-                    <TableLoadingRow colSpan={headerLabels.length} />
+                    <TableLoadingRow colSpan={headerLabels.length + 1} />
                   ) : (
                     <>
-                      {creditors.length > 0 ? (
+                      {invoices.length > 0 ? (
                         <>
                           {filteredData
                             .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                             .map((item, index) => (
-                              <CreditorRow
+                              <PaymentRow
                                 key={index}
-                                creditor={item}
-                                handleOnClickRow={handleOnClickRow}
+                                invoice={item}
+                                setSelectedInvoice={setSelectedInvoice}
+                                handleOpenUpdateDialog={handleOpenCloseUpdateDialog}
+                                handleOpenDeleteDialog={handleOpenCloseDeleteDialog}
                               />
                             ))}
-                          {filteredData.length === 0 && creditors.length != 0 && (
-                            <TableRow>
-                              <TableCell
-                                align="center"
-                                colSpan={headerLabels.length + 1}
-                              >{`No results found for "${searchTerm}"`}</TableCell>
-                            </TableRow>
-                          )}
                         </>
                       ) : (
-                        <TableEmptyRow colSpan={headerLabels.length} />
+                        <TableEmptyRow colSpan={headerLabels.length + 1} />
                       )}
                     </>
                   )}
@@ -122,7 +120,7 @@ export const CreditorView = ({
             <TablePagination
               page={page}
               component="div"
-              count={filteredData.length}
+              count={invoices.length}
               rowsPerPage={rowsPerPage}
               onPageChange={handleChangePage}
               rowsPerPageOptions={[10, 20, 30]}
@@ -131,40 +129,33 @@ export const CreditorView = ({
           </Card>
         </Grid>
       </Grid>
-      {isOpenCreditorAdd && (
-        <AddCreditorDialog
-          open={isOpenCreditorAdd}
+      {isOpenAdd && (
+        <AddPaymentDialog
+          open={isOpenAdd}
           formik={formik}
-          handleClose={handleOpenCloseCreditorAdd}
-          handleSubmit={handleAddCreditor}
-          isLoading={isLoadingCreditorAdd}
+          handleClose={handleOpenCloseAddDialog}
+          handleSubmit={handleSubmitAdd}
+          isLoading={isLoadingAdd}
+        />
+      )}
+      {isOpenUpdate && (
+        <UpdatePaymentDialog
+          open={isOpenUpdate}
+          formik={formik}
+          handleClose={handleOpenCloseUpdateDialog}
+          handleSubmit={handleSubmitUpdate}
+          isLoading={isLoadingUpdate}
+        />
+      )}
+      {isOpenDelete && (
+        <ConfirmationDialog
+          open={isOpenDelete}
+          contentText="Are you sure that you want to delete this record ?"
+          handleClose={handleOpenCloseDeleteDialog}
+          handleSubmit={handleSubmitDelete}
+          isLoading={isLoadingDelete}
         />
       )}
     </>
   );
-};
-
-CreditorView.propTypes = {
-  isOpenCreditorAdd: PropTypes.bool.isRequired,
-  creditors: PropTypes.array,
-  setSelectedCreditor: PropTypes.func.isRequired,
-  searchTerm: PropTypes.string,
-  handleSearchInputChange: PropTypes.func.isRequired,
-  filteredData: PropTypes.array,
-  formik: PropTypes.object.isRequired,
-  handleOpenCloseCreditorAdd: PropTypes.func.isRequired,
-  isLoadingCreditorAdd: PropTypes.bool.isRequired,
-  handleAddCreditor: PropTypes.func.isRequired,
-  isUpdate: PropTypes.bool.isRequired,
-  isLoadingCreditorUpdate: PropTypes.bool.isRequired,
-  handleUpdateCreditor: PropTypes.func.isRequired,
-  page: PropTypes.number.isRequired,
-  rowsPerPage: PropTypes.number.isRequired,
-  handleChangePage: PropTypes.func.isRequired,
-  handleChangeRowsPerPage: PropTypes.func.isRequired,
-  isOpenAddInvoice: PropTypes.bool.isRequired,
-  formikInvoice: PropTypes.object.isRequired,
-  isLoadingAddInvoice: PropTypes.bool.isRequired,
-  handleOpenCloseInvoiceDialog: PropTypes.func.isRequired,
-  handleSubmitAddInvoice: PropTypes.func.isRequired,
 };
