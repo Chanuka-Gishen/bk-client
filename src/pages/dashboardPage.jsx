@@ -8,7 +8,7 @@ export default function DashboardPage() {
   return (
     <>
       <Helmet>
-        <title> Dashboard | BookKeep </title>
+        <title> Dashboard | GamageGroups </title>
       </Helmet>
 
       <Dashboard />

@@ -381,17 +381,17 @@ const SalesBookController = () => {
   };
 
   useEffect(() => {
+    handleFetchSalesBooks();
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
     if (selectedBook) {
       handleFetchInvoices();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedBook]);
-
-  useEffect(() => {
-    handleFetchSalesBooks();
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   return (
     <SalesBookView

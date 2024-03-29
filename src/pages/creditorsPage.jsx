@@ -7,7 +7,7 @@ export default function CreditorsPage() {
   return (
     <>
       <Helmet>
-        <title> Creditors | BookKeep </title>
+        <title> Creditors | GamageGroups </title>
       </Helmet>
 
       <Creditor />

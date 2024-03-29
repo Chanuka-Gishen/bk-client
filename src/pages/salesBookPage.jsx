@@ -7,7 +7,7 @@ export default function SalesBooksPage() {
   return (
     <>
       <Helmet>
-        <title> SalesBooks | BookKeep </title>
+        <title> SalesBooks | GamageGroups </title>
       </Helmet>
 
       <SalesBook />

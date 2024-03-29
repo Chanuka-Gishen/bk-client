@@ -7,7 +7,7 @@ export default function EmployeesPage() {
   return (
     <>
       <Helmet>
-        <title> Employees | BookKeep </title>
+        <title> Employees | GamageGroups </title>
       </Helmet>
 
       <Users />

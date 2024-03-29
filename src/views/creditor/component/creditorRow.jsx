@@ -2,12 +2,9 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { TableCell, TableRow, Typography } from '@mui/material';
 
-import { useSelector } from 'react-redux';
 import { fDate } from 'src/utils/format-time';
 
 export const CreditorRow = ({ creditor, handleOnClickRow }) => {
-  const user = useSelector((state) => state.auth.user);
-
   return (
     <>
       <TableRow hover onClick={() => handleOnClickRow(creditor)}>
@@ -31,6 +28,5 @@ export const CreditorRow = ({ creditor, handleOnClickRow }) => {
 
 CreditorRow.propTypes = {
   creditor: PropTypes.object.isRequired,
-  setSelectedCreditor: PropTypes.func.isRequired,
-  handleOpenUpdateDialog: PropTypes.func.isRequired,
+  handleOnClickRow: PropTypes.func.isRequired,
 };

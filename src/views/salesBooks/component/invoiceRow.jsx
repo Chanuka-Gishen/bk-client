@@ -1,18 +1,9 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import {
-  Chip,
-  IconButton,
-  MenuItem,
-  Popover,
-  TableCell,
-  TableRow,
-  Typography,
-} from '@mui/material';
+import { IconButton, MenuItem, Popover, TableCell, TableRow, Typography } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
-import { useSelector } from 'react-redux';
 import { fDate } from 'src/utils/format-time';
 import { formatCurrency } from 'src/utils/format-number';
 
@@ -33,8 +24,6 @@ export const InvoiceRow = ({
     setSelectedInvoice(null);
     setOpen(null);
   };
-
-  const user = useSelector((state) => state.auth.user);
 
   return (
     <>

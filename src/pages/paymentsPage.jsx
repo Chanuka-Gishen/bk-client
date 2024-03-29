@@ -7,7 +7,7 @@ export default function PaymentsPage() {
   return (
     <>
       <Helmet>
-        <title> Payments | BookKeep </title>
+        <title> Payments | GamageGroups </title>
       </Helmet>
 
       <Payments />

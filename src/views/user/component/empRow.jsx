@@ -10,7 +10,6 @@ import {
   Typography,
 } from '@mui/material';
 import Iconify from 'src/components/iconify';
-import { useSelector } from 'react-redux';
 import { USER_STATUS } from 'src/constants/commonConstants';
 
 export const EmpRow = ({
@@ -30,8 +29,6 @@ export const EmpRow = ({
     setSelectedEmp(null);
     setOpen(null);
   };
-
-  const user = useSelector((state) => state.auth.user);
 
   return (
     <>

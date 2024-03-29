@@ -7,7 +7,7 @@ export default function LoginPage() {
   return (
     <>
       <Helmet>
-        <title> Login | BookKeep </title>
+        <title> Login | GamageGroups </title>
       </Helmet>
 
       <LoginView />

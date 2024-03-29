@@ -7,7 +7,7 @@ export default function CreditorDetailsPage() {
   return (
     <>
       <Helmet>
-        <title> Creditors Details | BookKeep </title>
+        <title> Creditors Details | GamageGroups </title>
       </Helmet>
 
       <CreditorDetails />

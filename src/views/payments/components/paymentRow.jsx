@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { useSelector } from 'react-redux';
 import { IconButton, MenuItem, Popover, TableCell, TableRow, Typography } from '@mui/material';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import EditIcon from '@mui/icons-material/Edit';
@@ -15,8 +14,6 @@ export const PaymentRow = ({
   handleOpenUpdateDialog,
   handleOpenDeleteDialog,
 }) => {
-  const user = useSelector((state) => state.auth.user);
-
   const [open, setOpen] = useState(null);
 
   const handleOpenMenu = (event) => {
