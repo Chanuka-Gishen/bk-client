@@ -1,39 +1,11 @@
-import React, { useState } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
-import {
-  Chip,
-  IconButton,
-  MenuItem,
-  Popover,
-  TableCell,
-  TableRow,
-  Typography,
-} from '@mui/material';
-import EditIcon from '@mui/icons-material/Edit';
-import AddBoxIcon from '@mui/icons-material/AddBox';
-import MoreVertIcon from '@mui/icons-material/MoreVert';
+import { TableCell, TableRow, Typography } from '@mui/material';
+
 import { useSelector } from 'react-redux';
 import { fDate } from 'src/utils/format-time';
 
-export const CreditorRow = ({
-  creditor,
-  handleOnClickRow,
-  setSelectedCreditor,
-  handleOpenUpdateDialog,
-  handleOpenCloseInvoiceDialog,
-}) => {
-  const [open, setOpen] = useState(null);
-
-  const handleOpenMenu = (event) => {
-    setSelectedCreditor(creditor);
-    setOpen(event.currentTarget);
-  };
-
-  const handleCloseMenu = () => {
-    setSelectedCreditor(null);
-    setOpen(null);
-  };
-
+export const CreditorRow = ({ creditor, handleOnClickRow }) => {
   const user = useSelector((state) => state.auth.user);
 
   return (
@@ -52,31 +24,7 @@ export const CreditorRow = ({
           {creditor.creditorMobileSecondary ? creditor.creditorMobileSecondary : ' - '}
         </TableCell>
         <TableCell>{fDate(creditor.creditorCreatedAt)}</TableCell>
-        <TableCell align="right">
-          <IconButton onClick={handleOpenMenu}>
-            <MoreVertIcon />
-          </IconButton>
-        </TableCell>
       </TableRow>
-      <Popover
-        open={!!open}
-        anchorEl={open}
-        onClose={handleCloseMenu}
-        anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
-        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-        // PaperProps={{
-        //   sx: { width: 140 },
-        // }}
-      >
-        <MenuItem onClick={() => handleOpenUpdateDialog(creditor)}>
-          <EditIcon sx={{ mr: 2 }} />
-          Edit
-        </MenuItem>
-        <MenuItem onClick={handleOpenCloseInvoiceDialog}>
-          <AddBoxIcon sx={{ mr: 2 }} />
-          invoice
-        </MenuItem>
-      </Popover>
     </>
   );
 };

@@ -1,10 +1,9 @@
-import React, { Fragment } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 
 import {
   Button,
   Card,
-  Container,
   Grid,
   InputAdornment,
   OutlinedInput,
@@ -27,13 +26,11 @@ import { CustomTableHead } from 'src/components/custom-table/custom-table-head';
 import TableLoadingRow from 'src/components/custom-table/table-loading-row';
 import TableEmptyRow from 'src/components/custom-table/table-empty-row';
 import { CreditorRow } from '../component/creditorRow';
-import { AddInvoiceDialog } from '../component/addInvoiceDialog';
 
 export const CreditorView = ({
   headerLabels,
   isLoading,
   creditors,
-  setSelectedCreditor,
   searchTerm,
   handleSearchInputChange,
   filteredData,
@@ -43,18 +40,10 @@ export const CreditorView = ({
   handleOpenCloseCreditorAdd,
   isLoadingCreditorAdd,
   handleAddCreditor,
-  isUpdate,
-  isLoadingCreditorUpdate,
-  handleUpdateCreditor,
   page,
   rowsPerPage,
   handleChangePage,
   handleChangeRowsPerPage,
-  isOpenAddInvoice,
-  formikInvoice,
-  isLoadingAddInvoice,
-  handleOpenCloseInvoiceDialog,
-  handleSubmitAddInvoice,
 }) => {
   const theme = useTheme();
   const matchDownMD = useMediaQuery(theme.breakpoints.down('lg'));
@@ -96,7 +85,7 @@ export const CreditorView = ({
             </Toolbar>
             <TableContainer sx={{ overflow: matchDownMD ? 'scroll' : 'unset' }}>
               <Table sx={{ minWidth: 800 }}>
-                <CustomTableHead enableAction={true} headLabel={headerLabels} />
+                <CustomTableHead enableAction={false} headLabel={headerLabels} />
                 <TableBody>
                   {isLoading ? (
                     <TableLoadingRow colSpan={headerLabels.length + 1} />
@@ -111,9 +100,6 @@ export const CreditorView = ({
                                 key={index}
                                 creditor={item}
                                 handleOnClickRow={handleOnClickRow}
-                                handleOpenUpdateDialog={handleOpenCloseCreditorAdd}
-                                handleOpenCloseInvoiceDialog={handleOpenCloseInvoiceDialog}
-                                setSelectedCreditor={setSelectedCreditor}
                               />
                             ))}
                           {filteredData.length === 0 && creditors.length != 0 && (
@@ -147,21 +133,11 @@ export const CreditorView = ({
       </Grid>
       {isOpenCreditorAdd && (
         <AddCreditorDialog
-          isUpdate={isUpdate}
           open={isOpenCreditorAdd}
           formik={formik}
           handleClose={handleOpenCloseCreditorAdd}
-          handleSubmit={isUpdate ? handleUpdateCreditor : handleAddCreditor}
-          isLoading={isUpdate ? isLoadingCreditorUpdate : isLoadingCreditorAdd}
-        />
-      )}
-      {isOpenAddInvoice && (
-        <AddInvoiceDialog
-          open={isOpenAddInvoice}
-          formik={formikInvoice}
-          handleClose={handleOpenCloseInvoiceDialog}
-          isLoading={isLoadingAddInvoice}
-          handleSubmit={handleSubmitAddInvoice}
+          handleSubmit={handleAddCreditor}
+          isLoading={isLoadingCreditorAdd}
         />
       )}
     </>

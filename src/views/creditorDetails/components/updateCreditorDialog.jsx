@@ -15,12 +15,12 @@ import { FormikProvider } from 'formik';
 import { LoadingButton } from '@mui/lab';
 import { MobileNumberInput } from 'src/components/mobile-number-input/mobile-number-input';
 
-export const AddCreditorDialog = ({ open, handleClose, formik, handleSubmit, isLoading }) => {
+export const UpdateCreditorDialog = ({ open, handleClose, formik, handleSubmit, isLoading }) => {
   const { touched, errors, getFieldProps } = formik;
 
   return (
     <Dialog open={open} onClose={handleClose} fullWidth sx={{ px: 2 }}>
-      <DialogTitle>Add Creditor</DialogTitle>
+      <DialogTitle>Update Creditor</DialogTitle>
       <DialogContent>
         <FormikProvider value={formik}>
           <Grid container spacing={2} sx={{ mt: 2 }}>
@@ -108,7 +108,7 @@ export const AddCreditorDialog = ({ open, handleClose, formik, handleSubmit, isL
   );
 };
 
-AddCreditorDialog.propTypes = {
+UpdateCreditorDialog.propTypes = {
   open: PropTypes.bool.isRequired,
   handleClose: PropTypes.func.isRequired,
   formik: PropTypes.object.isRequired,

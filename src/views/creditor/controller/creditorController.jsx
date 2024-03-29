@@ -24,12 +24,6 @@ const validationSchema = Yup.object().shape({
     .min(0, 'Invalid no of days'),
 });
 
-const validationSchemaInvoice = Yup.object().shape({
-  credInvoiceNo: Yup.string().required('Invoice no is required'),
-  credInvoiceDate: Yup.string().required('Invoiced Date is required'),
-  credInvoiceAmount: Yup.number().required().min(0, 'Invoice amount is invalid'),
-});
-
 const CreditorController = () => {
   const headerLabels = [
     'Creditor',
@@ -60,33 +54,16 @@ const CreditorController = () => {
     },
   });
 
-  const formikInvoice = useFormik({
-    initialValues: {
-      credInvoiceNo: '',
-      credInvoiceDate: new Date(),
-      credInvoiceAmount: 0,
-    },
-    validationSchema: validationSchemaInvoice,
-    onSubmit: () => {
-      null;
-    },
-  });
-
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
   const [searchTerm, setSearchTerm] = useState('');
   const [creditors, setCreditors] = useState([]);
-  const [selectedCreditor, setSelectedCreditor] = useState(null);
 
-  const [isUpdate, setIsUpdate] = useState(false);
   const [isOpenCreditorAdd, setIsOpenCreditorAdd] = useState(false);
-  const [isOpenAddInvoice, setIsOpenAddInvoice] = useState(false);
 
   const [isLoading, setIsLoading] = useState(true);
   const [isLoadingCreditorAdd, setIsLoadingCreditorAdd] = useState(false);
-  const [isLoadingCreditorUpdate, setIsLoadingCreditorUpdate] = useState(false);
-  const [isLoadingAddInvoice, setIsLoadingAddInvoice] = useState(false);
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -111,28 +88,7 @@ const CreditorController = () => {
     setIsOpenCreditorAdd(!isOpenCreditorAdd);
 
     if (!isOpenCreditorAdd) {
-      setIsUpdate(false);
       formik.resetForm();
-    }
-
-    if (data) {
-      setIsUpdate(true);
-      formik.setValues({
-        creditorName: data.creditorName,
-        creditorCity: data.creditorCity,
-        creditorOrganization: data.creditorOrganization ? data.creditorOrganization : '',
-        creditorMobilePrimary: data.creditorMobilePrimary,
-        creditorMobileSecondary: data.creditorMobileSecondary ? data.creditorMobileSecondary : '',
-        creditorCreditPeriod: 30,
-      });
-    }
-  };
-
-  const handleOpenCloseInvoiceDialog = () => {
-    setIsOpenAddInvoice(!isOpenAddInvoice);
-
-    if (!isOpenAddInvoice) {
-      formikInvoice.resetForm();
     }
   };
 
@@ -164,72 +120,6 @@ const CreditorController = () => {
         })
         .finally(() => {
           setIsLoadingCreditorAdd(false);
-        });
-    } else {
-      enqueueSnackbar(SNACKBAR_MESSAGE.FILL_REQUIRED_FIELDS, { variant: SNACKBAR_VARIANT.WARNING });
-    }
-  };
-
-  const handleUpdateCreditor = async () => {
-    if (formik.isValid && formik.dirty) {
-      setIsLoadingCreditorUpdate(true);
-
-      await backendAuthApi({
-        url: BACKEND_API.CREDITOR_UPDATE,
-        method: 'PUT',
-        cancelToken: sourceToken.token,
-        data: {
-          ...formik.values,
-          id: selectedCreditor._id,
-        },
-      })
-        .then((res) => {
-          if (responseUtil.isResponseSuccess(res.data.responseCode)) {
-            handleOpenCloseCreditorAdd(null);
-            handleFetchCreditors();
-          }
-          enqueueSnackbar(res.data.responseMessage, {
-            variant: responseUtil.findResponseType(res.data.responseCode),
-          });
-        })
-        .catch(() => {
-          setIsLoadingCreditorUpdate(false);
-        })
-        .finally(() => {
-          setIsLoadingCreditorUpdate(false);
-        });
-    } else {
-      enqueueSnackbar(SNACKBAR_MESSAGE.FILL_REQUIRED_FIELDS, { variant: SNACKBAR_VARIANT.WARNING });
-    }
-  };
-
-  const handleSubmitAddInvoice = async () => {
-    if (formikInvoice.isValid && formikInvoice.dirty) {
-      setIsLoadingAddInvoice(true);
-
-      await backendAuthApi({
-        url: BACKEND_API.CREDITOR_ADD_INVOICE,
-        method: 'POST',
-        cancelToken: sourceToken.token,
-        data: {
-          creditorId: selectedCreditor._id,
-          ...formikInvoice.values,
-        },
-      })
-        .then((res) => {
-          if (responseUtil.isResponseSuccess(res.data.responseCode)) {
-            handleOpenCloseInvoiceDialog();
-          }
-
-          enqueueSnackbar(res.data.responseMessage, {
-            variant: responseUtil.findResponseType(res.data.responseCode),
-          });
-        })
-        .catch(() => {
-          setIsLoadingAddInvoice(false);
-        })
-        .finally(() => {
-          setIsLoadingAddInvoice(false);
         });
     } else {
       enqueueSnackbar(SNACKBAR_MESSAGE.FILL_REQUIRED_FIELDS, { variant: SNACKBAR_VARIANT.WARNING });
@@ -268,7 +158,6 @@ const CreditorController = () => {
       headerLabels={headerLabels}
       isLoading={isLoading}
       creditors={creditors}
-      setSelectedCreditor={setSelectedCreditor}
       searchTerm={searchTerm}
       handleSearchInputChange={handleSearchInputChange}
       filteredData={filteredData}
@@ -278,18 +167,10 @@ const CreditorController = () => {
       handleOpenCloseCreditorAdd={handleOpenCloseCreditorAdd}
       isLoadingCreditorAdd={isLoadingCreditorAdd}
       handleAddCreditor={handleAddCreditor}
-      isUpdate={isUpdate}
-      isLoadingCreditorUpdate={isLoadingCreditorUpdate}
-      handleUpdateCreditor={handleUpdateCreditor}
       page={page}
       rowsPerPage={rowsPerPage}
       handleChangePage={handleChangePage}
       handleChangeRowsPerPage={handleChangeRowsPerPage}
-      isOpenAddInvoice={isOpenAddInvoice}
-      formikInvoice={formikInvoice}
-      isLoadingAddInvoice={isLoadingAddInvoice}
-      handleOpenCloseInvoiceDialog={handleOpenCloseInvoiceDialog}
-      handleSubmitAddInvoice={handleSubmitAddInvoice}
     />
   );
 };

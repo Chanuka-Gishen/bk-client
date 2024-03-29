@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 
@@ -21,7 +21,12 @@ const validationInvoiceUpdate = Yup.object().shape({
     .oneOf([PAYMENT_STATUS.PAID, PAYMENT_STATUS.NOTPAID], 'Invalid Status'),
 });
 
-const CreditorInvoicesCompController = ({ id }) => {
+const CreditorInvoicesCompController = ({
+  id,
+  isLoading,
+  invoices,
+  handleFetchCreditorInvoices,
+}) => {
   const headers = [
     'Invoice No',
     'Invoiced Date',
@@ -49,25 +54,25 @@ const CreditorInvoicesCompController = ({ id }) => {
     },
   });
 
-  const [invoices, setInvoices] = useState([]);
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+
   const [selectedInvoice, setSelectedInvoice] = useState(null);
 
   const [open, setOpen] = useState(null);
   const [openUpdate, setOpenUpdate] = useState(false);
   const [openDelete, setOpenDelete] = useState(false);
 
-  const [isLoading, setIsLoading] = useState(true);
   const [isLoadingUpdate, setIsLoadingUpdate] = useState(false);
   const [isLoadingDelete, setIsLoadingDelete] = useState(false);
 
-  const handleOpenMenu = (event, item) => {
-    setSelectedInvoice(item);
-    setOpen(event.currentTarget);
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
   };
 
-  const handleCloseMenu = () => {
-    setSelectedInvoice(null);
-    setOpen(null);
+  const handleChangeRowsPerPage = (event) => {
+    setPage(0);
+    setRowsPerPage(parseInt(event.target.value, 10));
   };
 
   const handleOpenCloseUpdateDialog = (data) => {
@@ -75,7 +80,6 @@ const CreditorInvoicesCompController = ({ id }) => {
 
     if (openUpdate) {
       formik.resetForm();
-      handleCloseMenu();
     } else {
       formik.setValues({
         credInvoiceNo: data.credInvoiceNo,
@@ -91,10 +95,6 @@ const CreditorInvoicesCompController = ({ id }) => {
 
   const handleOpenCloseDeleteDialog = () => {
     setOpenDelete(!openDelete);
-
-    if (openDelete) {
-      setOpen(null);
-    }
   };
 
   const handleUpdateInvoice = async () => {
@@ -130,43 +130,37 @@ const CreditorInvoicesCompController = ({ id }) => {
     }
   };
 
-  const handleDeleteInvoice = async () => {};
-
-  const handleFetchCreditorInvoices = async () => {
-    setIsLoading(true);
+  const handleDeleteInvoice = async () => {
+    setIsLoadingDelete(true);
 
     await backendAuthApi({
-      url: BACKEND_API.CREDITOR_INVOICES + id,
-      method: 'GET',
+      url: BACKEND_API.CREDITOR_DELETE_INVOICE + selectedInvoice._id,
+      method: 'DELETE',
       cancelToken: sourceToken.token,
     })
       .then((res) => {
         if (responseUtil.isResponseSuccess(res.data.responseCode)) {
-          setInvoices(res.data.responseData);
+          handleOpenCloseDeleteDialog();
+          handleFetchCreditorInvoices();
         }
+        enqueueSnackbar(res.data.responseMessage, {
+          variant: responseUtil.findResponseType(res.data.responseCode),
+        });
       })
       .catch(() => {
-        setIsLoading(false);
+        setIsLoadingDelete(false);
       })
       .finally(() => {
-        setIsLoading(false);
+        setIsLoadingDelete(false);
       });
   };
-
-  useEffect(() => {
-    handleFetchCreditorInvoices();
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   return (
     <CreditorInvoicesCompView
       isLoading={isLoading}
       headers={headers}
       invoices={invoices}
-      open={open}
-      handleOpenMenu={handleOpenMenu}
-      handleCloseMenu={handleCloseMenu}
+      setSelectedInvoice={setSelectedInvoice}
       openUpdate={openUpdate}
       formik={formik}
       handleOpenCloseUpdateDialog={handleOpenCloseUpdateDialog}
@@ -176,6 +170,10 @@ const CreditorInvoicesCompController = ({ id }) => {
       isLoadingDelete={isLoadingDelete}
       handleOpenCloseDeleteDialog={handleOpenCloseDeleteDialog}
       handleDeleteInvoice={handleDeleteInvoice}
+      page={page}
+      rowsPerPage={rowsPerPage}
+      handleChangePage={handleChangePage}
+      handleChangeRowsPerPage={handleChangeRowsPerPage}
     />
   );
 };

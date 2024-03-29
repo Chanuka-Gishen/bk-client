@@ -24,6 +24,7 @@ export const BACKEND_API = {
   CREDITOR_INVOICES: IP_URL + 'credInvoice/creditor/',
   CREDITOR_ADD_INVOICE: IP_URL + 'credInvoice/add',
   CREDITOR_UPDATE_INVOICE: IP_URL + 'credInvoice/update',
+  CREDITOR_DELETE_INVOICE: IP_URL + 'credInvoice/delete/',
   CRED_INVOICE_FILTER_DAYS: IP_URL + 'credInvoice/filterByDays',
 
   INVOICE_CREATE: IP_URL + 'invoice/add',
