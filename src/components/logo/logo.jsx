@@ -1,5 +1,5 @@
 const LogoSection = () => {
-  return <img src={'/assets/logo.svg'} alt="ZenByte" width="100" />;
+  return <img src={'/assets/images/invoices-logo.png'} alt="ZenByte" width="100" />;
 };
 
 export default LogoSection;
