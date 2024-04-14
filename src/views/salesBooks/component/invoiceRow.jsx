@@ -6,8 +6,10 @@ import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { fDate } from 'src/utils/format-time';
 import { formatCurrency } from 'src/utils/format-number';
+import { INVOICE_TYPES } from 'src/constants/invoiceTypeConstants';
 
 export const InvoiceRow = ({
+  bookType,
   invoice,
   setSelectedInvoice,
   handleOpenUpdateDialog,
@@ -28,18 +30,30 @@ export const InvoiceRow = ({
   return (
     <>
       <TableRow hover>
-        <TableCell component="th">
-          <Typography variant="subtitle2" noWrap>
-            {invoice.invoiceNoFrom}
-          </Typography>
-        </TableCell>
-        <TableCell component="th">
-          <Typography variant="subtitle2" noWrap>
-            {invoice.invoiceNoTo}
-          </Typography>
-        </TableCell>
+        {bookType === INVOICE_TYPES.RANGE ? (
+          <>
+            <TableCell component="th">
+              <Typography variant="subtitle2" noWrap>
+                {invoice.invoiceNoFrom}
+              </Typography>
+            </TableCell>
+            <TableCell component="th">
+              <Typography variant="subtitle2" noWrap>
+                {invoice.invoiceNoTo}
+              </Typography>
+            </TableCell>
+          </>
+        ) : (
+          <TableCell component="th">
+            <Typography variant="subtitle2" noWrap>
+              {invoice.invoiceNo}
+            </Typography>
+          </TableCell>
+        )}
+
         <TableCell>{fDate(invoice.invoiceCreatedAt)}</TableCell>
-        <TableCell>{formatCurrency(invoice.invoiceAmount)}</TableCell>
+        <TableCell>{formatCurrency(invoice.invoiceInAmount)}</TableCell>
+        <TableCell>{formatCurrency(invoice.invoiceOutAmount)}</TableCell>
         <TableCell align="right">
           <IconButton onClick={handleOpenMenu}>
             <MoreVertIcon />

@@ -1,13 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {
-  Button,
   Card,
-  Container,
   Grid,
   InputAdornment,
   OutlinedInput,
-  Stack,
   Table,
   TableBody,
   TableContainer,
@@ -17,15 +14,14 @@ import {
   useMediaQuery,
   useTheme,
 } from '@mui/material';
-import { Add } from '@mui/icons-material';
 import SearchIcon from '@mui/icons-material/Search';
 import { CustomTableHead } from 'src/components/custom-table/custom-table-head';
 import TableLoadingRow from 'src/components/custom-table/table-loading-row';
 import TableEmptyRow from 'src/components/custom-table/table-empty-row';
 import { PaymentRow } from '../components/paymentRow';
-import { AddPaymentDialog } from '../components/addPaymentDialog';
-import { UpdatePaymentDialog } from '../components/updatePaymentDialog';
 import ConfirmationDialog from 'src/components/confirmation-dialog/confirmation-dialog';
+import { InvoicePaymentAddDialog } from 'src/views/creditorDetails/components/creditorInvoicesComp/component/invoicePaymentAddDialog';
+import { InvoiceUpdateDialog } from 'src/views/creditorDetails/components/creditorInvoicesComp/component/invoiceUpdateDialog';
 
 export const PaymentsView = ({
   headerLabels,
@@ -35,19 +31,21 @@ export const PaymentsView = ({
   filteredData,
   isLoading,
   formik,
+  formikPayInvoice,
   isOpenAdd,
   isOpenUpdate,
   isOpenDelete,
-  isLoadingAdd,
+  isLoadingAddPayment,
   isLoadingUpdate,
   isLoadingDelete,
   setSelectedInvoice,
   handleOpenCloseAddDialog,
   handleOpenCloseUpdateDialog,
   handleOpenCloseDeleteDialog,
-  handleSubmitAdd,
+  handleSubmitAddPayment,
   handleSubmitUpdate,
   handleSubmitDelete,
+  handleFetchPayments,
   page,
   rowsPerPage,
   handleChangePage,
@@ -59,12 +57,7 @@ export const PaymentsView = ({
     <>
       <Grid container columnSpacing={2} rowSpacing={4}>
         <Grid item xs={12} sm={12}>
-          <Stack direction="row" spacing={2} justifyContent="space-between" alignItems="center">
-            <Typography variant="h4">Manage Payments</Typography>
-            <Button variant="contained" startIcon={<Add />} onClick={handleOpenCloseAddDialog}>
-              Add Payment
-            </Button>
-          </Stack>
+          <Typography variant="h4">Manage Creditor Payments</Typography>
         </Grid>
         <Grid item xs={12} sm={12}>
           <Card>
@@ -79,7 +72,7 @@ export const PaymentsView = ({
               <OutlinedInput
                 value={searchTerm}
                 onChange={handleSearchInputChange}
-                placeholder="Search description..."
+                placeholder="Search creditor..."
                 startAdornment={
                   <InputAdornment position="start">
                     <SearchIcon sx={{ color: 'text.disabled', width: 20, height: 20 }} />
@@ -104,8 +97,10 @@ export const PaymentsView = ({
                                 key={index}
                                 invoice={item}
                                 setSelectedInvoice={setSelectedInvoice}
+                                handleOpenCloseAddDialog={handleOpenCloseAddDialog}
                                 handleOpenUpdateDialog={handleOpenCloseUpdateDialog}
                                 handleOpenDeleteDialog={handleOpenCloseDeleteDialog}
+                                handleFetchPayments={handleFetchPayments}
                               />
                             ))}
                         </>
@@ -130,16 +125,16 @@ export const PaymentsView = ({
         </Grid>
       </Grid>
       {isOpenAdd && (
-        <AddPaymentDialog
+        <InvoicePaymentAddDialog
           open={isOpenAdd}
-          formik={formik}
+          formik={formikPayInvoice}
           handleClose={handleOpenCloseAddDialog}
-          handleSubmit={handleSubmitAdd}
-          isLoading={isLoadingAdd}
+          handleSubmit={handleSubmitAddPayment}
+          isLoading={isLoadingAddPayment}
         />
       )}
       {isOpenUpdate && (
-        <UpdatePaymentDialog
+        <InvoiceUpdateDialog
           open={isOpenUpdate}
           formik={formik}
           handleClose={handleOpenCloseUpdateDialog}

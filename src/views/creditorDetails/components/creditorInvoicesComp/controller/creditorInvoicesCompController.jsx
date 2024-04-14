@@ -10,6 +10,7 @@ import { SNACKBAR_MESSAGE, SNACKBAR_VARIANT } from 'src/constants/snackbarConsta
 import { backendAuthApi } from 'src/axios/instance/backend-axios-instance';
 import { BACKEND_API } from 'src/axios/constant/backend-api';
 import responseUtil from 'src/utils/responseUtil';
+import commonUtil from 'src/utils/common-util';
 
 const validationInvoiceUpdate = Yup.object().shape({
   credInvoiceNo: Yup.string().required('Invoice no is required'),
@@ -19,6 +20,12 @@ const validationInvoiceUpdate = Yup.object().shape({
   credInvoiceStatus: Yup.string()
     .required('Status required')
     .oneOf([PAYMENT_STATUS.PAID, PAYMENT_STATUS.NOTPAID], 'Invalid Status'),
+});
+
+const validationInvoicePayment = Yup.object().shape({
+  invoiceNo: Yup.string().required('Invoice no is required'),
+  invoiceAmount: Yup.number().required().min(0, 'Invoice amount is invalid'),
+  invoiceCreatedAt: Yup.string().required('Invoice created date is required'),
 });
 
 const CreditorInvoicesCompController = ({
@@ -33,9 +40,12 @@ const CreditorInvoicesCompController = ({
     'Invoice Due Date',
     'Invoice Paid Date',
     'Amount',
+    'Amount Balance',
     'Invoice Status',
     'Actions',
   ];
+
+  const headersPayments = ['Invoice No', 'Paid Amount', 'Paid Date'];
 
   const { enqueueSnackbar } = useSnackbar();
   const sourceToken = axios.CancelToken.source();
@@ -54,17 +64,30 @@ const CreditorInvoicesCompController = ({
     },
   });
 
+  const formikPayInvoice = useFormik({
+    initialValues: {
+      invoiceNo: '',
+      invoiceAmount: 0,
+      invoiceCreatedAt: new Date(),
+    },
+    validationSchema: validationInvoicePayment,
+    onSubmit: () => {
+      null;
+    },
+  });
+
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
   const [selectedInvoice, setSelectedInvoice] = useState(null);
 
-  const [open, setOpen] = useState(null);
   const [openUpdate, setOpenUpdate] = useState(false);
   const [openDelete, setOpenDelete] = useState(false);
+  const [openAddPayment, setOpenAddPayment] = useState(false);
 
   const [isLoadingUpdate, setIsLoadingUpdate] = useState(false);
   const [isLoadingDelete, setIsLoadingDelete] = useState(false);
+  const [isLoadingAddPayment, setIsLoadingAddPayment] = useState(false);
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -93,11 +116,20 @@ const CreditorInvoicesCompController = ({
     }
   };
 
+  const handleOpenCloseAddPaymentDialog = () => {
+    setOpenAddPayment(!openAddPayment);
+
+    if (!openAddPayment) {
+      formikPayInvoice.resetForm();
+    }
+  };
+
   const handleOpenCloseDeleteDialog = () => {
     setOpenDelete(!openDelete);
   };
 
   const handleUpdateInvoice = async () => {
+    commonUtil.validateFormik(formik);
     if (formik.isValid && formik.dirty) {
       setIsLoadingUpdate(true);
 
@@ -155,10 +187,46 @@ const CreditorInvoicesCompController = ({
       });
   };
 
+  const handleAddPayment = async () => {
+    commonUtil.validateFormik(formikPayInvoice);
+
+    if (formikPayInvoice.isValid && formikPayInvoice.dirty) {
+      setIsLoadingAddPayment(true);
+
+      await backendAuthApi({
+        url: BACKEND_API.INVOICE_CREATE_CRED,
+        method: 'POST',
+        cancelToken: sourceToken.token,
+        data: {
+          credInvoiceId: selectedInvoice._id,
+          ...formikPayInvoice.values,
+        },
+      })
+        .then((res) => {
+          if (responseUtil.isResponseSuccess(res.data.responseCode)) {
+            handleOpenCloseAddPaymentDialog(null);
+            handleFetchCreditorInvoices();
+          }
+          enqueueSnackbar(res.data.responseMessage, {
+            variant: responseUtil.findResponseType(res.data.responseCode),
+          });
+        })
+        .catch(() => {
+          setIsLoadingAddPayment(false);
+        })
+        .finally(() => {
+          setIsLoadingAddPayment(false);
+        });
+    } else {
+      enqueueSnackbar(SNACKBAR_MESSAGE.FILL_REQUIRED_FIELDS, { variant: SNACKBAR_VARIANT.WARNING });
+    }
+  };
+
   return (
     <CreditorInvoicesCompView
       isLoading={isLoading}
       headers={headers}
+      headersPayments={headersPayments}
       invoices={invoices}
       setSelectedInvoice={setSelectedInvoice}
       openUpdate={openUpdate}
@@ -170,6 +238,12 @@ const CreditorInvoicesCompController = ({
       isLoadingDelete={isLoadingDelete}
       handleOpenCloseDeleteDialog={handleOpenCloseDeleteDialog}
       handleDeleteInvoice={handleDeleteInvoice}
+      openAddPayment={openAddPayment}
+      isLoadingAddPayment={isLoadingAddPayment}
+      formikPayInvoice={formikPayInvoice}
+      handleOpenCloseAddPaymentDialog={handleOpenCloseAddPaymentDialog}
+      handleAddPayment={handleAddPayment}
+      handleFetchCreditorInvoices={handleFetchCreditorInvoices}
       page={page}
       rowsPerPage={rowsPerPage}
       handleChangePage={handleChangePage}

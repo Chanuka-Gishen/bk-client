@@ -17,7 +17,7 @@ import { DatePicker } from '@mui/x-date-pickers';
 
 import { CurrencyInput } from 'src/components/currency-input/currency-input';
 
-export const AddPaymentDialog = ({ open, handleClose, formik, handleSubmit, isLoading }) => {
+export const InvoicePaymentAddDialog = ({ open, handleClose, formik, handleSubmit, isLoading }) => {
   const { touched, errors, getFieldProps, values, setFieldValue } = formik;
 
   return (
@@ -26,40 +26,42 @@ export const AddPaymentDialog = ({ open, handleClose, formik, handleSubmit, isLo
       <DialogContent>
         <FormikProvider value={formik}>
           <Grid container spacing={2} sx={{ mt: 2 }}>
-            <Grid item xs={12} sm={12}>
+            <Grid item xs={12} sm={6}>
               <TextField
-                label="Description*"
+                label="Invoice No*"
                 fullWidth
                 autoComplete="off"
                 variant="outlined"
-                {...getFieldProps('paymentDescription')}
-                error={Boolean(touched.paymentDescription && errors.paymentDescription)}
-                helperText={touched.paymentDescription && errors.paymentDescription}
+                type="number"
+                {...getFieldProps('invoiceNo')}
+                error={Boolean(touched.invoiceNo && errors.invoiceNo)}
+                helperText={touched.invoiceNo && errors.invoiceNo}
               />
+            </Grid>
+
+            <Grid item xs={12} sm={6}>
+              <DatePicker
+                label="Invoiced Created At*"
+                value={values.invoiceCreatedAt}
+                onChange={(date) => setFieldValue('invoiceCreatedAt', date)}
+              />
+              {touched.invoiceCreatedAt && errors.invoiceCreatedAt && (
+                <FormHelperText error>{errors.invoiceCreatedAt}</FormHelperText>
+              )}
             </Grid>
             <Grid item xs={12} sm={6}>
               <TextField
-                label="Amount*"
+                label="Paid Amount*"
                 fullWidth
                 autoComplete="off"
                 variant="outlined"
-                {...getFieldProps('paymentAmount')}
-                error={Boolean(touched.paymentAmount && errors.paymentAmount)}
-                helperText={touched.paymentAmount && errors.paymentAmount}
+                {...getFieldProps('invoiceAmount')}
+                error={Boolean(touched.invoiceAmount && errors.invoiceAmount)}
+                helperText={touched.invoiceAmount && errors.invoiceAmount}
                 InputProps={{
                   inputComponent: CurrencyInput,
                 }}
               />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <DatePicker
-                label="Payment Date*"
-                value={values.paymentDate}
-                onChange={(date) => setFieldValue('paymentDate', date)}
-              />
-              {touched.paymentDate && errors.paymentDate && (
-                <FormHelperText error>{errors.paymentDate}</FormHelperText>
-              )}
             </Grid>
           </Grid>
         </FormikProvider>
@@ -73,14 +75,14 @@ export const AddPaymentDialog = ({ open, handleClose, formik, handleSubmit, isLo
           loading={isLoading}
           onClick={handleSubmit}
         >
-          Submit
+          Add
         </LoadingButton>
       </DialogActions>
     </Dialog>
   );
 };
 
-AddPaymentDialog.propTypes = {
+InvoicePaymentAddDialog.propTypes = {
   open: PropTypes.bool.isRequired,
   handleClose: PropTypes.func.isRequired,
   formik: PropTypes.object.isRequired,

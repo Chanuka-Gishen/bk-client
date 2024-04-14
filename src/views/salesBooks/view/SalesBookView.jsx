@@ -36,8 +36,10 @@ import { InvoiceRow } from '../component/invoiceRow';
 import { AddUpdateInvoiceDialog } from '../component/addUpdateInvoiceDialog';
 import ConfirmationDialog from 'src/components/confirmation-dialog/confirmation-dialog';
 import { AddInvoicesFileDialog } from '../component/addInvoicesFileDialog';
+import { INVOICE_TYPES } from 'src/constants/invoiceTypeConstants';
 
 export const SalesBookView = ({
+  bookType,
   isLoading,
   salesBooks,
   isOpenCreateDialog,
@@ -59,6 +61,7 @@ export const SalesBookView = ({
   handleUpdateInvoice,
   handleDeleteInvoice,
   formikInvoice,
+  formikInvoiceSingle,
   isOpenAddInvoiceDialog,
   isOpenUpdateInvoiceDialog,
   isOpenDeleteInvoiceDialog,
@@ -227,6 +230,7 @@ export const SalesBookView = ({
                                 .map((item, index) => (
                                   <InvoiceRow
                                     key={index}
+                                    bookType={bookType}
                                     invoice={item}
                                     setSelectedInvoice={setSelectedInvoice}
                                     handleOpenUpdateDialog={handleOpenCloseUpdateInvoiceDialog}
@@ -277,7 +281,8 @@ export const SalesBookView = ({
       {isOpenAddInvoiceDialog && (
         <AddUpdateInvoiceDialog
           isAdd={true}
-          formik={formikInvoice}
+          bookType={bookType}
+          formik={bookType === INVOICE_TYPES.RANGE ? formikInvoice : formikInvoiceSingle}
           handleClose={handleOpenCloseAddInvoiceDialog}
           open={isOpenAddInvoiceDialog}
           handleSubmit={handleAddInvoice}
@@ -287,7 +292,8 @@ export const SalesBookView = ({
       {isOpenUpdateInvoiceDialog && (
         <AddUpdateInvoiceDialog
           isAdd={false}
-          formik={formikInvoice}
+          bookType={bookType}
+          formik={bookType === INVOICE_TYPES.RANGE ? formikInvoice : formikInvoiceSingle}
           handleClose={handleOpenCloseUpdateInvoiceDialog}
           open={isOpenUpdateInvoiceDialog}
           handleSubmit={handleUpdateInvoice}

@@ -21,15 +21,22 @@ export const BACKEND_API = {
   CREDITOR_LIST: IP_URL + 'creditor/all',
   CREDITOR_DETAILS: IP_URL + 'creditor/details/',
 
+  CREDITORS_INVOICES: IP_URL + 'credInvoice/all',
   CREDITOR_INVOICES: IP_URL + 'credInvoice/creditor/',
   CREDITOR_ADD_INVOICE: IP_URL + 'credInvoice/add',
   CREDITOR_UPDATE_INVOICE: IP_URL + 'credInvoice/update',
   CREDITOR_DELETE_INVOICE: IP_URL + 'credInvoice/delete/',
   CRED_INVOICE_FILTER_DAYS: IP_URL + 'credInvoice/filterByDays',
 
-  INVOICE_CREATE: IP_URL + 'invoice/add',
-  INVOICE_UPDATE: IP_URL + 'invoice/update',
+  CRED_PAYMENT_INVOICES: IP_URL + 'invoice/cred-payments/',
+
+  INVOICE_CREATE_RANGE: IP_URL + 'invoice/add-range',
+  INVOICE_CREATE_SINGLE: IP_URL + 'invoice/add-single',
+  INVOICE_CREATE_CRED: IP_URL + 'invoice/add-cred',
+  INVOICE_UPDATE: IP_URL + 'invoice/update/',
+  INVOICE_UPDATE_PAYMENT: IP_URL + 'invoice/update-cred',
   INVOICE_DELETE: IP_URL + 'invoice/delete/',
+  INVOICE_DELETE_PAYMENT: IP_URL + 'invoice/delete-cred/',
   INVOICE_BY_BOOK: IP_URL + 'invoice/book/',
   INVOICE_BULK: IP_URL + 'invoice/bulk-invoices/',
 
