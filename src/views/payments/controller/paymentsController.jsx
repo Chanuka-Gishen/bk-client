@@ -46,7 +46,9 @@ const PaymentsController = () => {
 
   const [searchTerm, setSearchTerm] = useState('');
   const [invoices, setInvoices] = useState([]);
+  const [totalPayments, setTotalPayments] = useState(0);
   const [selectedInvoice, setSelectedInvoice] = useState(null);
+  const [selectedDate, setSelectedDate] = useState(null);
 
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -56,6 +58,7 @@ const PaymentsController = () => {
   const [isOpenDelete, setIsOpenDelete] = useState(false);
 
   const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingTotal, setIsLoadingTotal] = useState(true);
   const [isLoadingAddPayment, setIsLoadingAddPayment] = useState(false);
   const [isLoadingUpdate, setIsLoadingUpdate] = useState(false);
   const [isLoadingDelete, setIsLoadingDelete] = useState(false);
@@ -93,6 +96,14 @@ const PaymentsController = () => {
   const handleChangeRowsPerPage = (event) => {
     setPage(0);
     setRowsPerPage(parseInt(event.target.value, 10));
+  };
+
+  const handleSelectedDateChange = (date) => {
+    setSelectedDate(date);
+  };
+
+  const handleClearDate = () => {
+    setSelectedDate(null);
   };
 
   const handleSearchInputChange = (event) => {
@@ -229,13 +240,40 @@ const PaymentsController = () => {
       });
   };
 
+  const handleFetchTotalAmount = async () => {
+    setIsLoadingTotal(true);
+
+    await backendAuthApi({
+      url: BACKEND_API.INVOICE_TOTAL_CRED_PAYMENTS,
+      method: 'POST',
+      cancelToken: sourceToken.token,
+      data: {
+        filteredDate: selectedDate,
+      },
+    })
+      .then((res) => {
+        if (responseUtil.isResponseSuccess(res.data.responseCode)) {
+          setTotalPayments(res.data.responseData);
+        }
+      })
+      .catch(() => {
+        setIsLoadingTotal(false);
+      })
+      .finally(() => {
+        setIsLoadingTotal(false);
+      });
+  };
+
   const handleFetchPayments = async () => {
     setIsLoading(true);
 
     await backendAuthApi({
       url: BACKEND_API.CREDITORS_INVOICES,
-      method: 'GET',
+      method: 'POST',
       cancelToken: sourceToken.token,
+      data: {
+        filteredDate: selectedDate,
+      },
     })
       .then((res) => {
         if (responseUtil.isResponseSuccess(res.data.responseCode)) {
@@ -252,15 +290,18 @@ const PaymentsController = () => {
 
   useEffect(() => {
     handleFetchPayments();
+    handleFetchTotalAmount();
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [selectedDate]);
 
   return (
     <PaymentsView
       headerLabels={headerLabels}
       invoices={invoices}
+      totalPayments={totalPayments}
       isLoading={isLoading}
+      isLoadingTotal={isLoadingTotal}
       setSelectedInvoice={setSelectedInvoice}
       searchTerm={searchTerm}
       handleSearchInputChange={handleSearchInputChange}
@@ -280,6 +321,9 @@ const PaymentsController = () => {
       handleSubmitUpdate={handleSubmitUpdate}
       handleSubmitDelete={handleSubmitDelete}
       handleFetchPayments={handleFetchPayments}
+      selectedDate={selectedDate}
+      handleSelectedDateChange={handleSelectedDateChange}
+      handleClearDate={handleClearDate}
       page={page}
       rowsPerPage={rowsPerPage}
       handleChangePage={handleChangePage}

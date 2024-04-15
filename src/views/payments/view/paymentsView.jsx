@@ -2,9 +2,12 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {
   Card,
+  Chip,
   Grid,
+  IconButton,
   InputAdornment,
   OutlinedInput,
+  Stack,
   Table,
   TableBody,
   TableContainer,
@@ -15,6 +18,8 @@ import {
   useTheme,
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
+import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
+
 import { CustomTableHead } from 'src/components/custom-table/custom-table-head';
 import TableLoadingRow from 'src/components/custom-table/table-loading-row';
 import TableEmptyRow from 'src/components/custom-table/table-empty-row';
@@ -22,10 +27,17 @@ import { PaymentRow } from '../components/paymentRow';
 import ConfirmationDialog from 'src/components/confirmation-dialog/confirmation-dialog';
 import { InvoicePaymentAddDialog } from 'src/views/creditorDetails/components/creditorInvoicesComp/component/invoicePaymentAddDialog';
 import { InvoiceUpdateDialog } from 'src/views/creditorDetails/components/creditorInvoicesComp/component/invoiceUpdateDialog';
+import MainCard from 'src/components/mainCard';
+import { fDate } from 'src/utils/format-time';
+import { formatCurrency } from 'src/utils/format-number';
+import { DatePicker } from '@mui/x-date-pickers';
+import { CloseCircleFilled } from '@ant-design/icons';
 
 export const PaymentsView = ({
   headerLabels,
   invoices,
+  totalPayments,
+  isLoadingTotal,
   searchTerm,
   handleSearchInputChange,
   filteredData,
@@ -46,6 +58,9 @@ export const PaymentsView = ({
   handleSubmitUpdate,
   handleSubmitDelete,
   handleFetchPayments,
+  selectedDate,
+  handleSelectedDateChange,
+  handleClearDate,
   page,
   rowsPerPage,
   handleChangePage,
@@ -59,6 +74,31 @@ export const PaymentsView = ({
         <Grid item xs={12} sm={12}>
           <Typography variant="h4">Manage Creditor Payments</Typography>
         </Grid>
+        <Grid item xs={12} sm={3}>
+          <MainCard contentSX={{ p: 2.25 }}>
+            <Stack spacing={0.5}>
+              <Typography variant="h6" color="textSecondary">
+                Total Creditors Payments
+              </Typography>
+              <Grid container alignItems="center">
+                <Grid item xs={12} sm={12}>
+                  <Typography variant="h4" color="inherit">
+                    {isLoadingTotal ? 'Loading...' : formatCurrency(totalPayments)}
+                  </Typography>
+                </Grid>
+                <Grid item xs={12} sm={12}>
+                  <Chip
+                    variant="combined"
+                    icon={<CalendarMonthIcon />}
+                    label={`${fDate(selectedDate ? selectedDate : new Date())}`}
+                    sx={{ mt: 1 }}
+                    size="small"
+                  />
+                </Grid>
+              </Grid>
+            </Stack>
+          </MainCard>
+        </Grid>
         <Grid item xs={12} sm={12}>
           <Card>
             <Toolbar
@@ -69,16 +109,32 @@ export const PaymentsView = ({
                 p: (theme) => theme.spacing(0, 1, 0, 3),
               }}
             >
-              <OutlinedInput
-                value={searchTerm}
-                onChange={handleSearchInputChange}
-                placeholder="Search creditor..."
-                startAdornment={
-                  <InputAdornment position="start">
-                    <SearchIcon sx={{ color: 'text.disabled', width: 20, height: 20 }} />
-                  </InputAdornment>
-                }
-              />
+              <Grid container alignItems="center" justifyContent="space-between" spacing={1}>
+                <Grid item xs={12} sm={3}>
+                  <OutlinedInput
+                    fullWidth
+                    value={searchTerm}
+                    onChange={handleSearchInputChange}
+                    placeholder="Search creditor..."
+                    startAdornment={
+                      <InputAdornment position="start">
+                        <SearchIcon sx={{ color: 'text.disabled', width: 20, height: 20 }} />
+                      </InputAdornment>
+                    }
+                  />
+                </Grid>
+                <Grid item xs={12} sm={3}>
+                  <Stack direction="row" spacing={2}>
+                    <DatePicker
+                      onChange={(date) => handleSelectedDateChange(date)}
+                      value={selectedDate}
+                    />
+                    <IconButton onClick={handleClearDate} size="large">
+                      <CloseCircleFilled />
+                    </IconButton>
+                  </Stack>
+                </Grid>
+              </Grid>
             </Toolbar>
             <TableContainer sx={{ overflow: matchDownMD ? 'scroll' : 'unset' }}>
               <Table sx={{ minWidth: 800 }}>
