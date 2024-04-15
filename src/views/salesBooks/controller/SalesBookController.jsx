@@ -56,7 +56,9 @@ const SalesBookController = () => {
   const [selectedBook, setSelectedBook] = useState(null);
   const [invoiceHeaders, setInvoiceHeaders] = useState(invoiceHeadersRange);
   const [invoices, setInvoices] = useState([]);
+  const [invoiceStats, setInvoiceStats] = useState(null);
   const [selectedInvoice, setSelectedInvoice] = useState(null);
+  const [filteredDate, setFilteredDate] = useState(null);
   const [selectedFile, setSelectedFile] = useState(null);
 
   const [isOpenCreateDialog, setIsOpenCreateDialog] = useState(false);
@@ -70,6 +72,7 @@ const SalesBookController = () => {
   const [isLoadingCreate, setIsLoadingCreate] = useState(false);
   const [isLoadingUpdate, setIsLoadingUpdate] = useState(false);
   const [isLoadingInvoices, setIsLoadingInvoices] = useState(true);
+  const [isLoadingInvoicesStats, setIsLoadingInvoicesStats] = useState(true);
   const [isLoadingInvoiceAdd, setIsLoadingInvoiceAdd] = useState(false);
   const [isLoadingInvoiceUpdate, setIsLoadingInvoiceUpdate] = useState(false);
   const [isLoadingInvoiceDelete, setIsLoadingInvoiceDelete] = useState(false);
@@ -120,6 +123,10 @@ const SalesBookController = () => {
   const handleChangeRowsPerPage = (event) => {
     setPage(0);
     setRowsPerPage(parseInt(event.target.value, 10));
+  };
+
+  const handleFilterDateChange = (date) => {
+    setFilteredDate(date);
   };
 
   const handleOpenCloseCreateDialog = () => {
@@ -242,8 +249,15 @@ const SalesBookController = () => {
 
       await backendAuthApi({
         url: `${BACKEND_API.INVOICE_BY_BOOK + selectedBook._id}/${selectedBook.bookType}`,
-        method: 'GET',
+        method: 'POST',
+        query: {
+          page: page,
+          limit: rowsPerPage,
+        },
         cancelToken: sourceToken.token,
+        data: {
+          filteredDate: filteredDate,
+        },
       })
         .then((res) => {
           if (responseUtil.isResponseSuccess(res.data.responseCode)) {
@@ -257,6 +271,30 @@ const SalesBookController = () => {
           setIsLoadingInvoices(false);
         });
     }
+  };
+
+  const handleFetchSalesBookStats = async () => {
+    setIsLoadingInvoicesStats(true);
+
+    await backendAuthApi({
+      url: `${BACKEND_API.INVOICE_STATS_AMOUNT + selectedBook._id}/${selectedBook.bookType}`,
+      method: 'POST',
+      cancelToken: sourceToken.token,
+      data: {
+        filteredDate,
+      },
+    })
+      .then((res) => {
+        if (responseUtil.isResponseSuccess(res.data.responseCode)) {
+          setInvoiceStats(res.data.responseData);
+        }
+      })
+      .catch(() => {
+        setIsLoadingInvoicesStats(false);
+      })
+      .finally(() => {
+        setIsLoadingInvoicesStats(false);
+      });
   };
 
   const handleUpdateSalesBook = async () => {
@@ -325,6 +363,7 @@ const SalesBookController = () => {
           if (responseUtil.isResponseSuccess(res.data.responseCode)) {
             handleOpenCloseAddInvoiceDialog();
             handleFetchInvoices();
+            handleFetchSalesBookStats();
           }
           enqueueSnackbar(res.data.responseMessage, {
             variant: responseUtil.findResponseType(res.data.responseCode),
@@ -369,6 +408,7 @@ const SalesBookController = () => {
           if (responseUtil.isResponseSuccess(res.data.responseCode)) {
             handleOpenCloseUpdateInvoiceDialog();
             handleFetchInvoices();
+            handleFetchSalesBookStats();
           }
           enqueueSnackbar(res.data.responseMessage, {
             variant: responseUtil.findResponseType(res.data.responseCode),
@@ -398,6 +438,7 @@ const SalesBookController = () => {
           if (responseUtil.isResponseSuccess(res.data.responseCode)) {
             handleOpenCloseDeleteInvoiceDialog();
             handleFetchInvoices();
+            handleFetchSalesBookStats();
           }
           enqueueSnackbar(res.data.responseMessage, {
             variant: responseUtil.findResponseType(res.data.responseCode),
@@ -432,6 +473,7 @@ const SalesBookController = () => {
           if (responseUtil.isResponseSuccess(res.data.responseCode)) {
             handleOpenCloseAddBulkInvDialog();
             handleFetchInvoices();
+            handleFetchSalesBookStats();
           }
           enqueueSnackbar(res.data.responseMessage, {
             variant: responseUtil.findResponseType(res.data.responseCode),
@@ -476,9 +518,10 @@ const SalesBookController = () => {
   useEffect(() => {
     if (selectedBook) {
       handleFetchInvoices();
+      handleFetchSalesBookStats();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedBook]);
+  }, [selectedBook, filteredDate]);
 
   return (
     <SalesBookView
@@ -499,7 +542,11 @@ const SalesBookController = () => {
       invoiceHeaders={invoiceHeaders}
       isLoadingInvoices={isLoadingInvoices}
       invoices={invoices}
+      invoiceStats={invoiceStats}
+      isLoadingInvoicesStats={isLoadingInvoicesStats}
       setSelectedInvoice={setSelectedInvoice}
+      filteredDate={filteredDate}
+      handleFilterDateChange={handleFilterDateChange}
       formikInvoice={formikInvoice}
       formikInvoiceSingle={formikInvoiceSingle}
       isOpenAddInvoiceDialog={isOpenAddInvoiceDialog}

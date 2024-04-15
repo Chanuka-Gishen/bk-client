@@ -40,6 +40,7 @@ export const BACKEND_API = {
   INVOICE_BY_BOOK: IP_URL + 'invoice/book/',
   INVOICE_BULK: IP_URL + 'invoice/bulk-invoices/',
   INVOICE_TOTAL_CRED_PAYMENTS: IP_URL + 'invoice/payment-total',
+  INVOICE_STATS_AMOUNT: IP_URL + 'invoice/invoices-net/',
 
   PAYMENT_ADD: IP_URL + 'payment/add',
   PAYMENT_UPDATE: IP_URL + 'payment/update',

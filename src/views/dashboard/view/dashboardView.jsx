@@ -1,7 +1,7 @@
 import React from 'react';
 
 // material-ui
-import { Grid, MenuItem, Select, Stack, Typography } from '@mui/material';
+import { Grid, MenuItem, Select, Stack, TablePagination, Typography } from '@mui/material';
 
 import MainCard from 'src/components/mainCard';
 import { DueInvoicesTable } from '../component/dueInvoicesTable';
@@ -12,6 +12,10 @@ export const DashboardView = ({
   dueInvocies,
   handleSelectDueDays,
   headersDueInvoice,
+  page,
+  rowsPerPage,
+  handleChangePage,
+  handleChangeRowsPerPage,
 }) => {
   return (
     <Grid container rowSpacing={4.5} columnSpacing={2.75}>
@@ -30,8 +34,19 @@ export const DashboardView = ({
             headers={headersDueInvoice}
             isLoading={isLoadingDueInvoices}
             invoices={dueInvocies}
+            page={page}
+            rowsPerPage={rowsPerPage}
           />
         </MainCard>
+        <TablePagination
+          page={page}
+          component="div"
+          count={dueInvocies.length}
+          rowsPerPage={rowsPerPage}
+          onPageChange={handleChangePage}
+          rowsPerPageOptions={[10, 20, 30]}
+          onRowsPerPageChange={handleChangeRowsPerPage}
+        />
       </Grid>
     </Grid>
   );

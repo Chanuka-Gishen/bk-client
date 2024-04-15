@@ -13,6 +13,7 @@ const DashboardController = () => {
     'Invoice Due Date',
     'Invoice Paid Date',
     'Amount',
+    'Balance Amount',
     'Invoice Status',
   ];
 
@@ -20,9 +21,21 @@ const DashboardController = () => {
 
   const [selectedDays, setSelectedDays] = useState(30);
 
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+
   const [dueInvocies, setDueInvoices] = useState([]);
 
   const [isLoadingDueInvoices, setIsLoadingDueInvocies] = useState(false);
+
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setPage(0);
+    setRowsPerPage(parseInt(event.target.value, 10));
+  };
 
   const handleSelectDueDays = (event) => {
     setSelectedDays(event.target.value);
@@ -35,6 +48,10 @@ const DashboardController = () => {
       url: BACKEND_API.CRED_INVOICE_FILTER_DAYS,
       method: 'POST',
       cancelToken: sourceToken.token,
+      query: {
+        page: page,
+        limit: rowsPerPage,
+      },
       data: {
         days: selectedDays,
       },
@@ -65,6 +82,10 @@ const DashboardController = () => {
       dueInvocies={dueInvocies}
       handleSelectDueDays={handleSelectDueDays}
       headersDueInvoice={headersDueInvoice}
+      page={page}
+      rowsPerPage={rowsPerPage}
+      handleChangePage={handleChangePage}
+      handleChangeRowsPerPage={handleChangeRowsPerPage}
     />
   );
 };

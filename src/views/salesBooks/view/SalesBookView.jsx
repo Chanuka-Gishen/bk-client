@@ -9,6 +9,7 @@ import {
   CardContent,
   Container,
   Grid,
+  IconButton,
   Stack,
   Table,
   TableBody,
@@ -17,6 +18,7 @@ import {
   TableHead,
   TablePagination,
   TableRow,
+  Toolbar,
   Typography,
   useTheme,
 } from '@mui/material';
@@ -37,6 +39,9 @@ import { AddUpdateInvoiceDialog } from '../component/addUpdateInvoiceDialog';
 import ConfirmationDialog from 'src/components/confirmation-dialog/confirmation-dialog';
 import { AddInvoicesFileDialog } from '../component/addInvoicesFileDialog';
 import { INVOICE_TYPES } from 'src/constants/invoiceTypeConstants';
+import { formatCurrency } from 'src/utils/format-number';
+import { DatePicker } from '@mui/x-date-pickers';
+import { CloseCircleFilled } from '@ant-design/icons';
 
 export const SalesBookView = ({
   bookType,
@@ -56,6 +61,10 @@ export const SalesBookView = ({
   invoiceHeaders,
   isLoadingInvoices,
   invoices,
+  invoiceStats,
+  filteredDate,
+  handleFilterDateChange,
+  isLoadingInvoicesStats,
   setSelectedInvoice,
   handleAddInvoice,
   handleUpdateInvoice,
@@ -207,6 +216,28 @@ export const SalesBookView = ({
             </Grid>
             <Grid item xs={12} sm={12}>
               <Card>
+                <Toolbar
+                  sx={{
+                    height: 96,
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    p: (theme) => theme.spacing(0, 1, 0, 3),
+                  }}
+                >
+                  <Grid container alignItems="center" justifyContent="flex-end" spacing={1}>
+                    <Grid item xs={12} sm={3}>
+                      <Stack direction="row" spacing={2}>
+                        <DatePicker
+                          onChange={(date) => handleFilterDateChange(date)}
+                          value={filteredDate}
+                        />
+                        <IconButton onClick={() => handleFilterDateChange(null)} size="large">
+                          <CloseCircleFilled />
+                        </IconButton>
+                      </Stack>
+                    </Grid>
+                  </Grid>
+                </Toolbar>
                 <TableContainer>
                   <Table>
                     <TableHead>
@@ -237,6 +268,31 @@ export const SalesBookView = ({
                                     handleOpenDeleteDialog={handleOpenCloseDeleteInvoiceDialog}
                                   />
                                 ))}
+                              {invoiceStats && (
+                                <>
+                                  <TableRow sx={{ border: '1px solid #e0e0e0' }}>
+                                    <TableCell
+                                      colSpan={bookType === INVOICE_TYPES.RANGE ? 2 : 1}
+                                    ></TableCell>
+                                    <TableCell variant="head">Total</TableCell>
+                                    <TableCell>
+                                      {formatCurrency(invoiceStats.totalInAmount)}
+                                    </TableCell>
+                                    <TableCell>
+                                      {formatCurrency(invoiceStats.totalOutAmount)}
+                                    </TableCell>
+                                    <TableCell></TableCell>
+                                  </TableRow>
+                                  <TableRow sx={{ border: '1px solid #e0e0e0' }}>
+                                    <TableCell
+                                      colSpan={bookType === INVOICE_TYPES.RANGE ? 2 : 1}
+                                    ></TableCell>
+                                    <TableCell variant="head">Cash Balance</TableCell>
+                                    <TableCell>{formatCurrency(invoiceStats.netAmount)}</TableCell>
+                                    <TableCell colSpan={2}></TableCell>
+                                  </TableRow>
+                                </>
+                              )}
                             </>
                           ) : (
                             <TableEmptyRow colSpan={invoiceHeaders.length} />
