@@ -50,7 +50,7 @@ export const InvoiceRow = ({
             </Typography>
           </TableCell>
         )}
-
+        <TableCell>{invoice.invoiceDescription ? invoice.invoiceDescription : '-'}</TableCell>
         <TableCell>{fDate(invoice.invoiceCreatedAt)}</TableCell>
         <TableCell>{formatCurrency(invoice.invoiceInAmount)}</TableCell>
         <TableCell>{formatCurrency(invoice.invoiceOutAmount)}</TableCell>

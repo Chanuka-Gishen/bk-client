@@ -23,6 +23,7 @@ const validationSchema = Yup.object().shape({
 const validationSchemaInvoice = Yup.object().shape({
   invoiceNoFrom: Yup.number().required('From invoice no required').min(1),
   invoiceNoTo: Yup.number().required('To invoice no required').min(1),
+  invoiceDescription: Yup.string().nullable,
   invoiceInAmount: Yup.number().required('Amount in required').min(0),
   invoiceOutAmount: Yup.number().required('Amount out required').min(0),
   invoiceCreatedAt: Yup.date().required('Invoice date required'),
@@ -30,6 +31,7 @@ const validationSchemaInvoice = Yup.object().shape({
 
 const validationSchemaInvoiceSingle = Yup.object().shape({
   invoiceNo: Yup.number().required('From invoice no required').min(1),
+  invoiceDescription: Yup.string().nullable,
   invoiceInAmount: Yup.number().required('Amount in required').min(0),
   invoiceOutAmount: Yup.number().required('Amount out required').min(0),
   invoiceCreatedAt: Yup.date().required('Invoice date required'),
@@ -39,12 +41,20 @@ const SalesBookController = () => {
   const invoiceHeadersRange = [
     'Invoice From',
     'Invoice To',
+    'Description',
     'Invoiced Date',
     'Amount In',
     'Amount Out',
     'Action',
   ];
-  const invoiceHeadersSingle = ['Invoice No', 'Invoiced Date', 'Amount In', 'Amount Out', 'Action'];
+  const invoiceHeadersSingle = [
+    'Invoice No',
+    'Description',
+    'Invoiced Date',
+    'Amount In',
+    'Amount Out',
+    'Action',
+  ];
 
   const { enqueueSnackbar } = useSnackbar();
   const sourceToken = axios.CancelToken.source();
@@ -99,6 +109,7 @@ const SalesBookController = () => {
     initialValues: {
       invoiceNoFrom: 1,
       invoiceNoTo: 1,
+      invoiceDescription: '',
       invoiceInAmount: 0,
       invoiceOutAmount: 0,
       invoiceCreatedAt: new Date(),
@@ -112,6 +123,7 @@ const SalesBookController = () => {
   const formikInvoiceSingle = useFormik({
     initialValues: {
       invoiceNo: 1,
+      invoiceDescription: '',
       invoiceInAmount: 0,
       invoiceOutAmount: 0,
       invoiceCreatedAt: new Date(),

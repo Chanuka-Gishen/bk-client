@@ -76,6 +76,15 @@ export const AddUpdateInvoiceDialog = ({
                 />
               </Grid>
             )}
+            <Grid item xs={12} sm={6}>
+              <TextField
+                label="Description"
+                fullWidth
+                autoComplete="off"
+                variant="outlined"
+                {...getFieldProps('invoiceDescription')}
+              />
+            </Grid>
 
             <Grid item xs={12} sm={6}>
               <DatePicker
