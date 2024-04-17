@@ -1,17 +1,6 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import {
-  Box,
-  Collapse,
-  IconButton,
-  MenuItem,
-  Popover,
-  Table,
-  TableBody,
-  TableCell,
-  TableRow,
-  Typography,
-} from '@mui/material';
+import { IconButton, MenuItem, Popover, TableCell, TableRow, Typography } from '@mui/material';
 
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import EditIcon from '@mui/icons-material/Edit';
@@ -22,7 +11,6 @@ import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 
 import { fDate } from 'src/utils/format-time';
 import { formatCurrency } from 'src/utils/format-number';
-import { CustomTableHead } from 'src/components/custom-table/custom-table-head';
 import Label from 'src/components/label';
 import { PAYMENT_STATUS } from 'src/constants/commonConstants';
 import { PaymentInvoices } from './creditPayments';

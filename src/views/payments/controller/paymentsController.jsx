@@ -51,6 +51,7 @@ const PaymentsController = () => {
   const [selectedDate, setSelectedDate] = useState(null);
 
   const [page, setPage] = useState(0);
+  const [count, setCount] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
   const [isOpenAdd, setIsOpenAdd] = useState(false);
@@ -271,13 +272,18 @@ const PaymentsController = () => {
       url: BACKEND_API.CREDITORS_INVOICES,
       method: 'POST',
       cancelToken: sourceToken.token,
+      params: {
+        page: page,
+        limit: rowsPerPage,
+      },
       data: {
         filteredDate: selectedDate,
       },
     })
       .then((res) => {
         if (responseUtil.isResponseSuccess(res.data.responseCode)) {
-          setInvoices(res.data.responseData);
+          setInvoices(res.data.responseData.invoices);
+          setCount(res.data.responseData.count);
         }
       })
       .catch(() => {
@@ -293,7 +299,7 @@ const PaymentsController = () => {
     handleFetchTotalAmount();
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedDate]);
+  }, [selectedDate, page, rowsPerPage]);
 
   return (
     <PaymentsView
@@ -325,6 +331,7 @@ const PaymentsController = () => {
       handleSelectedDateChange={handleSelectedDateChange}
       handleClearDate={handleClearDate}
       page={page}
+      count={count}
       rowsPerPage={rowsPerPage}
       handleChangePage={handleChangePage}
       handleChangeRowsPerPage={handleChangeRowsPerPage}

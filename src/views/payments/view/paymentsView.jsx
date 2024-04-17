@@ -62,6 +62,7 @@ export const PaymentsView = ({
   handleSelectedDateChange,
   handleClearDate,
   page,
+  count,
   rowsPerPage,
   handleChangePage,
   handleChangeRowsPerPage,
@@ -146,19 +147,17 @@ export const PaymentsView = ({
                     <>
                       {invoices.length > 0 ? (
                         <>
-                          {filteredData
-                            .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                            .map((item, index) => (
-                              <PaymentRow
-                                key={index}
-                                invoice={item}
-                                setSelectedInvoice={setSelectedInvoice}
-                                handleOpenCloseAddDialog={handleOpenCloseAddDialog}
-                                handleOpenUpdateDialog={handleOpenCloseUpdateDialog}
-                                handleOpenDeleteDialog={handleOpenCloseDeleteDialog}
-                                handleFetchPayments={handleFetchPayments}
-                              />
-                            ))}
+                          {filteredData.map((item, index) => (
+                            <PaymentRow
+                              key={index}
+                              invoice={item}
+                              setSelectedInvoice={setSelectedInvoice}
+                              handleOpenCloseAddDialog={handleOpenCloseAddDialog}
+                              handleOpenUpdateDialog={handleOpenCloseUpdateDialog}
+                              handleOpenDeleteDialog={handleOpenCloseDeleteDialog}
+                              handleFetchPayments={handleFetchPayments}
+                            />
+                          ))}
                         </>
                       ) : (
                         <TableEmptyRow colSpan={headerLabels.length + 1} />
@@ -171,7 +170,7 @@ export const PaymentsView = ({
             <TablePagination
               page={page}
               component="div"
-              count={invoices.length}
+              count={count}
               rowsPerPage={rowsPerPage}
               onPageChange={handleChangePage}
               rowsPerPageOptions={[10, 20, 30]}

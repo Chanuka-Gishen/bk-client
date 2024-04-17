@@ -6,6 +6,7 @@ import { fDate } from 'src/utils/format-time';
 import { formatCurrency } from 'src/utils/format-number';
 import { PAYMENT_STATUS } from 'src/constants/commonConstants';
 import Label from 'src/components/label';
+import { CustomTableHead } from 'src/components/custom-table/custom-table-head';
 
 export const DueInvoicesTable = ({ headers, isLoading, invoices, page, rowsPerPage }) => {
   return (
@@ -20,13 +21,7 @@ export const DueInvoicesTable = ({ headers, isLoading, invoices, page, rowsPerPa
       }}
     >
       <Table>
-        <TableHead>
-          <TableRow>
-            {headers.map((item) => (
-              <TableCell>{item}</TableCell>
-            ))}
-          </TableRow>
-        </TableHead>
+        <CustomTableHead headLabel={headers} enableAction={false} />
         <TableBody>
           {isLoading ? (
             <TableLoadingRow colSpan={headers.length} />

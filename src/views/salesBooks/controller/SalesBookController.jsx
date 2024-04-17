@@ -50,6 +50,7 @@ const SalesBookController = () => {
   const sourceToken = axios.CancelToken.source();
 
   const [page, setPage] = useState(0);
+  const [documentCount, setDocumentCount] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
   const [salesBooks, setSalesBooks] = useState([]);
@@ -59,7 +60,9 @@ const SalesBookController = () => {
   const [invoiceStats, setInvoiceStats] = useState(null);
   const [selectedInvoice, setSelectedInvoice] = useState(null);
   const [filteredDate, setFilteredDate] = useState(null);
+  const [downloadDate, setDownloadDate] = useState(null);
   const [selectedFile, setSelectedFile] = useState(null);
+  const [cashBalance, setCashBalance] = useState(0);
 
   const [isOpenCreateDialog, setIsOpenCreateDialog] = useState(false);
   const [isOpenUpdateDialog, setIsOpenUpdateDialog] = useState(false);
@@ -67,6 +70,7 @@ const SalesBookController = () => {
   const [isOpenAddInvoiceDialog, setIsOpenAddInvoiceDialog] = useState(false);
   const [isOpenDeleteInvoiceDialog, setIsOpenDeleteInvoiceDialog] = useState(false);
   const [isOpenAddBulkInvDialog, setIsOpenAddBulkInvDialog] = useState(false);
+  const [isOpenDownloadInvoice, setIsOpenDownloadInvoice] = useState(false);
 
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingCreate, setIsLoadingCreate] = useState(false);
@@ -77,6 +81,8 @@ const SalesBookController = () => {
   const [isLoadingInvoiceUpdate, setIsLoadingInvoiceUpdate] = useState(false);
   const [isLoadingInvoiceDelete, setIsLoadingInvoiceDelete] = useState(false);
   const [isLoadingInvoiceBulk, setIsLoadingInvoiceBulk] = useState(false);
+  const [isLoadingCashBalance, setIsLoadingCashBalance] = useState(true);
+  const [isDownloadingInvoiceReport, setIsDownloadingInvoiceReport] = useState(false);
 
   const formik = useFormik({
     initialValues: {
@@ -127,6 +133,10 @@ const SalesBookController = () => {
 
   const handleFilterDateChange = (date) => {
     setFilteredDate(date);
+  };
+
+  const handleChangeDownloadDate = (date) => {
+    setDownloadDate(date);
   };
 
   const handleOpenCloseCreateDialog = () => {
@@ -213,6 +223,10 @@ const SalesBookController = () => {
     }
   };
 
+  const handleOpenCloseDownloadReportDialog = () => {
+    setIsOpenDownloadInvoice(!isOpenDownloadInvoice);
+  };
+
   const handleCreateSalesBook = async () => {
     commonUtil.validateFormik(formik);
     if (formik.isValid && formik.dirty) {
@@ -250,7 +264,7 @@ const SalesBookController = () => {
       await backendAuthApi({
         url: `${BACKEND_API.INVOICE_BY_BOOK + selectedBook._id}/${selectedBook.bookType}`,
         method: 'POST',
-        query: {
+        params: {
           page: page,
           limit: rowsPerPage,
         },
@@ -261,7 +275,8 @@ const SalesBookController = () => {
       })
         .then((res) => {
           if (responseUtil.isResponseSuccess(res.data.responseCode)) {
-            setInvoices(res.data.responseData);
+            setInvoices(res.data.responseData.invoices);
+            setDocumentCount(res.data.responseData.documentCount);
           }
         })
         .catch(() => {
@@ -430,7 +445,7 @@ const SalesBookController = () => {
       setIsLoadingInvoiceDelete(true);
 
       await backendAuthApi({
-        url: BACKEND_API.INVOICE_DELETE + selectedInvoice._id,
+        url: `${BACKEND_API.INVOICE_DELETE}${selectedInvoice._id}/${selectedBook.bookType}`,
         method: 'DELETE',
         cancelToken: sourceToken.token,
       })
@@ -488,6 +503,73 @@ const SalesBookController = () => {
     }
   };
 
+  const handleDownloadInvoiceReport = async () => {
+    setIsDownloadingInvoiceReport(true);
+
+    try {
+      if (downloadDate) {
+        // Make a GET request to the endpoint that generates the PDF
+        const response = await axios.get(BACKEND_API.SBOOK_DOWNLOAD_SUM, {
+          params: { date: downloadDate },
+        });
+
+        // Check if the response is successful
+        if (!response.ok) {
+          throw new Error('Failed to download PDF');
+        }
+
+        // Convert the response data to a Blob
+        const blob = await response.blob();
+
+        // Create a temporary URL for the Blob
+        const url = URL.createObjectURL(blob);
+
+        // Create a link element
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `${
+          workOrder.workOrderLinked.length === 0
+            ? workOrder.workOrderInvoice.invoiceNumber
+            : workOrder.workOrderCode
+        }.pdf`;
+        document.body.appendChild(link);
+
+        // Simulate a click on the link to trigger the download
+        link.click();
+
+        // Clean up: remove the link and revoke the temporary URL
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+      }
+    } catch (error) {
+      enqueueSnackbar(error.message, { variant: SNACKBAR_VARIANT.ERROR });
+      setIsDownloadingInvoiceReport(false);
+    } finally {
+      setIsDownloadingInvoiceReport(false);
+    }
+  };
+
+  const handleFetchCashBalance = async () => {
+    setIsLoadingCashBalance(true);
+
+    await backendAuthApi({
+      url: BACKEND_API.SBOOK_CASHB,
+      method: 'GET',
+      cancelToken: sourceToken.token,
+    })
+      .then((res) => {
+        if (responseUtil.isResponseSuccess(res.data.responseCode)) {
+          setCashBalance(res.data.responseData);
+        }
+      })
+      .catch(() => {
+        setIsLoadingCashBalance(false);
+      })
+      .finally(() => {
+        setIsLoadingCashBalance(false);
+      });
+  };
+
   const handleFetchSalesBooks = async () => {
     setIsLoading(true);
 
@@ -511,6 +593,7 @@ const SalesBookController = () => {
 
   useEffect(() => {
     handleFetchSalesBooks();
+    handleFetchCashBalance();
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -521,13 +604,15 @@ const SalesBookController = () => {
       handleFetchSalesBookStats();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedBook, filteredDate]);
+  }, [selectedBook, filteredDate, page, rowsPerPage]);
 
   return (
     <SalesBookView
       bookType={selectedBook && selectedBook.bookType}
       isLoading={isLoading}
       salesBooks={salesBooks}
+      cashBalance={cashBalance}
+      isLoadingCashBalance={isLoadingCashBalance}
       isOpenCreateDialog={isOpenCreateDialog}
       isLoadingCreate={isLoadingCreate}
       formik={formik}
@@ -568,9 +653,16 @@ const SalesBookController = () => {
       handleOpenCloseAddBulkInvDialog={handleOpenCloseAddBulkInvDialog}
       handleAddBulkFiles={handleAddBulkFiles}
       page={page}
+      documentCount={documentCount}
       rowsPerPage={rowsPerPage}
       handleChangePage={handleChangePage}
       handleChangeRowsPerPage={handleChangeRowsPerPage}
+      downloadDate={downloadDate}
+      isOpenDownloadInvoice={isOpenDownloadInvoice}
+      handleOpenCloseDownloadReportDialog={handleOpenCloseDownloadReportDialog}
+      isDownloadingInvoiceReport={isDownloadingInvoiceReport}
+      handleChangeDownloadDate={handleChangeDownloadDate}
+      handleDownloadInvoiceReport={handleDownloadInvoiceReport}
     />
   );
 };

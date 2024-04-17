@@ -15,6 +15,8 @@ export const BACKEND_API = {
   SBOOK_CREATE: IP_URL + 'sales-book/create',
   SBOOK_UPDATE: IP_URL + 'sales-book/update',
   SBOOK_GET_ALL: IP_URL + 'sales-book/',
+  SBOOK_CASHB: IP_URL + 'sales-book/cash-balance',
+  SBOOK_DOWNLOAD_SUM: IP_URL + 'sales-book/download-summary',
 
   CREDITOR_CREATE: IP_URL + 'creditor/create',
   CREDITOR_UPDATE: IP_URL + 'creditor/update',
@@ -46,4 +48,9 @@ export const BACKEND_API = {
   PAYMENT_UPDATE: IP_URL + 'payment/update',
   PAYMENT_DELETE: IP_URL + 'payment/delete/',
   PAYMENTS: IP_URL + 'payment/invoices',
+
+  CASHB_GET_RECENT: IP_URL + 'balance/recent',
+  CASHB_GET_TODAY: IP_URL + 'balance/today',
+  CASHB_UPDATE: IP_URL + 'balance/update',
+  CASHB_RESET: IP_URL + 'balance/reset/',
 };

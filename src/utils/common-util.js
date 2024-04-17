@@ -66,6 +66,16 @@ const validateFormik = (formik) => {
   });
 };
 
+const isToday = (givenDate) => {
+  const today = new Date();
+  const date = new Date(givenDate);
+  return (
+    date.getDate() === today.getDate() &&
+    date.getMonth() === today.getMonth() &&
+    date.getFullYear() === today.getFullYear()
+  );
+};
+
 /* eslint import/no-anonymous-default-export: [2, {"allowObject": true}] */
 export default {
   isUndefinedOrNull,
@@ -74,4 +84,5 @@ export default {
   getDirectImageLink,
   calculateMonthDifference,
   validateFormik,
+  isToday,
 };
