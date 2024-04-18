@@ -1,10 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {
-  Button,
   Card,
-  Container,
+  Chip,
   Grid,
+  IconButton,
   InputAdornment,
   OutlinedInput,
   Stack,
@@ -17,38 +17,52 @@ import {
   useMediaQuery,
   useTheme,
 } from '@mui/material';
-import { Add } from '@mui/icons-material';
 import SearchIcon from '@mui/icons-material/Search';
+import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
+
 import { CustomTableHead } from 'src/components/custom-table/custom-table-head';
 import TableLoadingRow from 'src/components/custom-table/table-loading-row';
 import TableEmptyRow from 'src/components/custom-table/table-empty-row';
 import { PaymentRow } from '../components/paymentRow';
-import { AddPaymentDialog } from '../components/addPaymentDialog';
-import { UpdatePaymentDialog } from '../components/updatePaymentDialog';
 import ConfirmationDialog from 'src/components/confirmation-dialog/confirmation-dialog';
+import { InvoicePaymentAddDialog } from 'src/views/creditorDetails/components/creditorInvoicesComp/component/invoicePaymentAddDialog';
+import { InvoiceUpdateDialog } from 'src/views/creditorDetails/components/creditorInvoicesComp/component/invoiceUpdateDialog';
+import MainCard from 'src/components/mainCard';
+import { fDate } from 'src/utils/format-time';
+import { formatCurrency } from 'src/utils/format-number';
+import { DatePicker } from '@mui/x-date-pickers';
+import { CloseCircleFilled } from '@ant-design/icons';
 
 export const PaymentsView = ({
   headerLabels,
   invoices,
+  totalPayments,
+  isLoadingTotal,
   searchTerm,
   handleSearchInputChange,
   filteredData,
   isLoading,
   formik,
+  formikPayInvoice,
   isOpenAdd,
   isOpenUpdate,
   isOpenDelete,
-  isLoadingAdd,
+  isLoadingAddPayment,
   isLoadingUpdate,
   isLoadingDelete,
   setSelectedInvoice,
   handleOpenCloseAddDialog,
   handleOpenCloseUpdateDialog,
   handleOpenCloseDeleteDialog,
-  handleSubmitAdd,
+  handleSubmitAddPayment,
   handleSubmitUpdate,
   handleSubmitDelete,
+  handleFetchPayments,
+  selectedDate,
+  handleSelectedDateChange,
+  handleClearDate,
   page,
+  count,
   rowsPerPage,
   handleChangePage,
   handleChangeRowsPerPage,
@@ -59,12 +73,32 @@ export const PaymentsView = ({
     <>
       <Grid container columnSpacing={2} rowSpacing={4}>
         <Grid item xs={12} sm={12}>
-          <Stack direction="row" spacing={2} justifyContent="space-between" alignItems="center">
-            <Typography variant="h4">Manage Payments</Typography>
-            <Button variant="contained" startIcon={<Add />} onClick={handleOpenCloseAddDialog}>
-              Add Payment
-            </Button>
-          </Stack>
+          <Typography variant="h4">Manage Creditor Payments</Typography>
+        </Grid>
+        <Grid item xs={12} sm={3}>
+          <MainCard contentSX={{ p: 2.25 }}>
+            <Stack spacing={0.5}>
+              <Typography variant="h6" color="textSecondary">
+                Total Creditors Payments
+              </Typography>
+              <Grid container alignItems="center">
+                <Grid item xs={12} sm={12}>
+                  <Typography variant="h4" color="inherit">
+                    {isLoadingTotal ? 'Loading...' : formatCurrency(totalPayments)}
+                  </Typography>
+                </Grid>
+                <Grid item xs={12} sm={12}>
+                  <Chip
+                    variant="combined"
+                    icon={<CalendarMonthIcon />}
+                    label={`${fDate(selectedDate ? selectedDate : new Date())}`}
+                    sx={{ mt: 1 }}
+                    size="small"
+                  />
+                </Grid>
+              </Grid>
+            </Stack>
+          </MainCard>
         </Grid>
         <Grid item xs={12} sm={12}>
           <Card>
@@ -76,16 +110,32 @@ export const PaymentsView = ({
                 p: (theme) => theme.spacing(0, 1, 0, 3),
               }}
             >
-              <OutlinedInput
-                value={searchTerm}
-                onChange={handleSearchInputChange}
-                placeholder="Search description..."
-                startAdornment={
-                  <InputAdornment position="start">
-                    <SearchIcon sx={{ color: 'text.disabled', width: 20, height: 20 }} />
-                  </InputAdornment>
-                }
-              />
+              <Grid container alignItems="center" justifyContent="space-between" spacing={1}>
+                <Grid item xs={12} sm={3}>
+                  <OutlinedInput
+                    fullWidth
+                    value={searchTerm}
+                    onChange={handleSearchInputChange}
+                    placeholder="Search creditor..."
+                    startAdornment={
+                      <InputAdornment position="start">
+                        <SearchIcon sx={{ color: 'text.disabled', width: 20, height: 20 }} />
+                      </InputAdornment>
+                    }
+                  />
+                </Grid>
+                <Grid item xs={12} sm={3}>
+                  <Stack direction="row" spacing={2}>
+                    <DatePicker
+                      onChange={(date) => handleSelectedDateChange(date)}
+                      value={selectedDate}
+                    />
+                    <IconButton onClick={handleClearDate} size="large">
+                      <CloseCircleFilled />
+                    </IconButton>
+                  </Stack>
+                </Grid>
+              </Grid>
             </Toolbar>
             <TableContainer sx={{ overflow: matchDownMD ? 'scroll' : 'unset' }}>
               <Table sx={{ minWidth: 800 }}>
@@ -97,17 +147,17 @@ export const PaymentsView = ({
                     <>
                       {invoices.length > 0 ? (
                         <>
-                          {filteredData
-                            .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                            .map((item, index) => (
-                              <PaymentRow
-                                key={index}
-                                invoice={item}
-                                setSelectedInvoice={setSelectedInvoice}
-                                handleOpenUpdateDialog={handleOpenCloseUpdateDialog}
-                                handleOpenDeleteDialog={handleOpenCloseDeleteDialog}
-                              />
-                            ))}
+                          {filteredData.map((item, index) => (
+                            <PaymentRow
+                              key={index}
+                              invoice={item}
+                              setSelectedInvoice={setSelectedInvoice}
+                              handleOpenCloseAddDialog={handleOpenCloseAddDialog}
+                              handleOpenUpdateDialog={handleOpenCloseUpdateDialog}
+                              handleOpenDeleteDialog={handleOpenCloseDeleteDialog}
+                              handleFetchPayments={handleFetchPayments}
+                            />
+                          ))}
                         </>
                       ) : (
                         <TableEmptyRow colSpan={headerLabels.length + 1} />
@@ -120,7 +170,7 @@ export const PaymentsView = ({
             <TablePagination
               page={page}
               component="div"
-              count={invoices.length}
+              count={count}
               rowsPerPage={rowsPerPage}
               onPageChange={handleChangePage}
               rowsPerPageOptions={[10, 20, 30]}
@@ -130,16 +180,16 @@ export const PaymentsView = ({
         </Grid>
       </Grid>
       {isOpenAdd && (
-        <AddPaymentDialog
+        <InvoicePaymentAddDialog
           open={isOpenAdd}
-          formik={formik}
+          formik={formikPayInvoice}
           handleClose={handleOpenCloseAddDialog}
-          handleSubmit={handleSubmitAdd}
-          isLoading={isLoadingAdd}
+          handleSubmit={handleSubmitAddPayment}
+          isLoading={isLoadingAddPayment}
         />
       )}
       {isOpenUpdate && (
-        <UpdatePaymentDialog
+        <InvoiceUpdateDialog
           open={isOpenUpdate}
           formik={formik}
           handleClose={handleOpenCloseUpdateDialog}

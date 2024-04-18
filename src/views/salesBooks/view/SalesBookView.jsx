@@ -7,8 +7,11 @@ import {
   Card,
   CardActionArea,
   CardContent,
+  Chip,
   Container,
   Grid,
+  IconButton,
+  OutlinedInput,
   Stack,
   Table,
   TableBody,
@@ -17,14 +20,21 @@ import {
   TableHead,
   TablePagination,
   TableRow,
+  TextField,
+  Toolbar,
   Typography,
   useTheme,
 } from '@mui/material';
+import { DatePicker } from '@mui/x-date-pickers';
 
 import AddIcon from '@mui/icons-material/Add';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import EditIcon from '@mui/icons-material/Edit';
+import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
+import FileDownloadIcon from '@mui/icons-material/FileDownload';
+
+import { CloseCircleFilled } from '@ant-design/icons';
 
 import { CreateBookDialog } from '../component/createBookDialog';
 import { fDate } from 'src/utils/format-time';
@@ -36,10 +46,18 @@ import { InvoiceRow } from '../component/invoiceRow';
 import { AddUpdateInvoiceDialog } from '../component/addUpdateInvoiceDialog';
 import ConfirmationDialog from 'src/components/confirmation-dialog/confirmation-dialog';
 import { AddInvoicesFileDialog } from '../component/addInvoicesFileDialog';
+import { INVOICE_TYPES } from 'src/constants/invoiceTypeConstants';
+import { formatCurrency } from 'src/utils/format-number';
+import { CurrencyInput } from 'src/components/currency-input/currency-input';
+import MainCard from 'src/components/mainCard';
+import { DownloadDialog } from '../component/downloadDialog';
 
 export const SalesBookView = ({
+  bookType,
   isLoading,
   salesBooks,
+  cashBalance,
+  isLoadingCashBalance,
   isOpenCreateDialog,
   isLoadingCreate,
   formik,
@@ -54,11 +72,16 @@ export const SalesBookView = ({
   invoiceHeaders,
   isLoadingInvoices,
   invoices,
+  invoiceStats,
+  filteredDate,
+  handleFilterDateChange,
+  isLoadingInvoicesStats,
   setSelectedInvoice,
   handleAddInvoice,
   handleUpdateInvoice,
   handleDeleteInvoice,
   formikInvoice,
+  formikInvoiceSingle,
   isOpenAddInvoiceDialog,
   isOpenUpdateInvoiceDialog,
   isOpenDeleteInvoiceDialog,
@@ -75,25 +98,72 @@ export const SalesBookView = ({
   handleOpenCloseAddBulkInvDialog,
   handleAddBulkFiles,
   page,
+  documentCount,
   rowsPerPage,
   handleChangePage,
   handleChangeRowsPerPage,
+  downloadDate,
+  isOpenDownloadInvoice,
+  handleOpenCloseDownloadReportDialog,
+  isDownloadingInvoiceReport,
+  handleChangeDownloadDate,
+  handleDownloadInvoiceReport,
 }) => {
   const theme = useTheme();
   return (
     <>
       <Grid container columnSpacing={2} rowSpacing={4}>
+        <Grid item xs={12} sm={3}>
+          <MainCard contentSX={{ p: 2.25 }}>
+            <Stack spacing={0.5}>
+              <Typography variant="h6" color="textSecondary">
+                Total Cash Balance
+              </Typography>
+              <Grid container alignItems="center">
+                <Grid item xs={12} sm={12}>
+                  <Typography variant="h4" color="inherit">
+                    {isLoadingCashBalance ? 'Loading...' : formatCurrency(cashBalance)}
+                  </Typography>
+                </Grid>
+                <Grid item xs={12} sm={12}>
+                  <Chip
+                    variant="combined"
+                    icon={<CalendarMonthIcon />}
+                    label={`${fDate(new Date())}`}
+                    sx={{ mt: 1 }}
+                    size="small"
+                  />
+                </Grid>
+              </Grid>
+            </Stack>
+          </MainCard>
+        </Grid>
         <Grid item xs={12} sm={12}>
-          <Stack direction="row" alignItems="center" justifyContent="space-between">
+          <Stack
+            direction={{ xs: 'column', sm: 'row' }}
+            spacing={2}
+            alignItems="center"
+            justifyContent="space-between"
+          >
             <Typography variant="h4">Manage SalesBooks</Typography>
-            <Button
-              variant="contained"
-              color="inherit"
-              startIcon={<AddIcon />}
-              onClick={handleOpenCloseCreateDialog}
-            >
-              Add New Book
-            </Button>
+            <Stack direction="row" spacing={2}>
+              <Button
+                variant="contained"
+                color="inherit"
+                startIcon={<AddIcon />}
+                onClick={handleOpenCloseDownloadReportDialog}
+              >
+                Download Reports
+              </Button>
+              <Button
+                variant="contained"
+                color="inherit"
+                startIcon={<AddIcon />}
+                onClick={handleOpenCloseCreateDialog}
+              >
+                Add New Book
+              </Button>
+            </Stack>
           </Stack>
         </Grid>
         {salesBooks.length > 0 && (
@@ -204,6 +274,38 @@ export const SalesBookView = ({
             </Grid>
             <Grid item xs={12} sm={12}>
               <Card>
+                <Toolbar
+                  sx={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    p: (theme) => theme.spacing(4, 2, 2, 2),
+                  }}
+                >
+                  <Grid container alignItems="center" justifyContent="space-between" spacing={1}>
+                    <Grid item xs={12} sm={4}>
+                      <TextField
+                        name="grossTotal"
+                        value={invoiceStats ? invoiceStats.netAmount : 0}
+                        label="Gross Total"
+                        InputProps={{
+                          inputComponent: CurrencyInput,
+                          readOnly: true,
+                        }}
+                      />
+                    </Grid>
+                    <Grid item xs={12} sm={3}>
+                      <Stack direction="row" spacing={2}>
+                        <DatePicker
+                          onChange={(date) => handleFilterDateChange(date)}
+                          value={filteredDate}
+                        />
+                        <IconButton onClick={() => handleFilterDateChange(null)} size="large">
+                          <CloseCircleFilled />
+                        </IconButton>
+                      </Stack>
+                    </Grid>
+                  </Grid>
+                </Toolbar>
                 <TableContainer>
                   <Table>
                     <TableHead>
@@ -222,17 +324,34 @@ export const SalesBookView = ({
                         <>
                           {invoices.length > 0 ? (
                             <>
-                              {invoices
-                                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                                .map((item, index) => (
-                                  <InvoiceRow
-                                    key={index}
-                                    invoice={item}
-                                    setSelectedInvoice={setSelectedInvoice}
-                                    handleOpenUpdateDialog={handleOpenCloseUpdateInvoiceDialog}
-                                    handleOpenDeleteDialog={handleOpenCloseDeleteInvoiceDialog}
-                                  />
-                                ))}
+                              {invoices.map((item, index) => (
+                                <InvoiceRow
+                                  key={index}
+                                  bookType={bookType}
+                                  invoice={item}
+                                  setSelectedInvoice={setSelectedInvoice}
+                                  handleOpenUpdateDialog={handleOpenCloseUpdateInvoiceDialog}
+                                  handleOpenDeleteDialog={handleOpenCloseDeleteInvoiceDialog}
+                                />
+                              ))}
+                              {invoiceStats && (
+                                <>
+                                  <TableRow sx={{ border: '1px solid #e0e0e0' }}>
+                                    <TableCell
+                                      variant="head"
+                                      colSpan={bookType === INVOICE_TYPES.RANGE ? 2 : 1}
+                                    ></TableCell>
+                                    <TableCell variant="head">Total</TableCell>
+                                    <TableCell>
+                                      {formatCurrency(invoiceStats.totalInAmount)}
+                                    </TableCell>
+                                    <TableCell>
+                                      {formatCurrency(invoiceStats.totalOutAmount)}
+                                    </TableCell>
+                                    <TableCell></TableCell>
+                                  </TableRow>
+                                </>
+                              )}
                             </>
                           ) : (
                             <TableEmptyRow colSpan={invoiceHeaders.length} />
@@ -245,7 +364,7 @@ export const SalesBookView = ({
                 <TablePagination
                   page={page}
                   component="div"
-                  count={invoices.length}
+                  count={documentCount}
                   rowsPerPage={rowsPerPage}
                   onPageChange={handleChangePage}
                   rowsPerPageOptions={[10, 20, 30]}
@@ -277,7 +396,8 @@ export const SalesBookView = ({
       {isOpenAddInvoiceDialog && (
         <AddUpdateInvoiceDialog
           isAdd={true}
-          formik={formikInvoice}
+          bookType={bookType}
+          formik={bookType === INVOICE_TYPES.RANGE ? formikInvoice : formikInvoiceSingle}
           handleClose={handleOpenCloseAddInvoiceDialog}
           open={isOpenAddInvoiceDialog}
           handleSubmit={handleAddInvoice}
@@ -287,7 +407,8 @@ export const SalesBookView = ({
       {isOpenUpdateInvoiceDialog && (
         <AddUpdateInvoiceDialog
           isAdd={false}
-          formik={formikInvoice}
+          bookType={bookType}
+          formik={bookType === INVOICE_TYPES.RANGE ? formikInvoice : formikInvoiceSingle}
           handleClose={handleOpenCloseUpdateInvoiceDialog}
           open={isOpenUpdateInvoiceDialog}
           handleSubmit={handleUpdateInvoice}
@@ -311,6 +432,16 @@ export const SalesBookView = ({
           handleClose={handleOpenCloseAddBulkInvDialog}
           handleSubmit={handleAddBulkFiles}
           isLoading={isLoadingInvoiceBulk}
+        />
+      )}
+      {isOpenDownloadInvoice && (
+        <DownloadDialog
+          open={isOpenDownloadInvoice}
+          handleClose={handleOpenCloseDownloadReportDialog}
+          downloadDate={downloadDate}
+          handleChange={handleChangeDownloadDate}
+          handleSubmit={handleDownloadInvoiceReport}
+          isLoading={isDownloadingInvoiceReport}
         />
       )}
     </>

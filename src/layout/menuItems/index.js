@@ -34,19 +34,19 @@ const menuItems = [
     users: [],
   },
   {
-    id: 'sales-books',
-    title: 'SalesBooks',
-    type: 'item',
-    url: NAVIGATION_ROUTES.salesBooks,
-    icon: icons.ReadOutlined,
-    users: [],
-  },
-  {
     id: 'payments',
     title: 'Payments',
     type: 'item',
     url: NAVIGATION_ROUTES.payments.base,
     icon: icons.DollarOutlined,
+    users: [],
+  },
+  {
+    id: 'sales-books',
+    title: 'SalesBooks',
+    type: 'item',
+    url: NAVIGATION_ROUTES.salesBooks,
+    icon: icons.ReadOutlined,
     users: [],
   },
   {

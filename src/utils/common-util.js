@@ -52,6 +52,30 @@ const calculateMonthDifference = (date) => {
   return differenceInMs <= 30 * 24 * 60 * 60 * 1000;
 };
 
+const validateFormik = (formik) => {
+  const fieldsToValidateAndTouch = Object.keys(formik.initialValues);
+
+  // Validate the form
+  formik.validateForm().then(() => {
+    // Set touched for the specified fields
+    const touchedFields = {};
+    fieldsToValidateAndTouch.forEach((field) => {
+      touchedFields[field] = true;
+    });
+    formik.setTouched(touchedFields);
+  });
+};
+
+const isToday = (givenDate) => {
+  const today = new Date();
+  const date = new Date(givenDate);
+  return (
+    date.getDate() === today.getDate() &&
+    date.getMonth() === today.getMonth() &&
+    date.getFullYear() === today.getFullYear()
+  );
+};
+
 /* eslint import/no-anonymous-default-export: [2, {"allowObject": true}] */
 export default {
   isUndefinedOrNull,
@@ -59,4 +83,6 @@ export default {
   stringIsEmptyOrSpaces,
   getDirectImageLink,
   calculateMonthDifference,
+  validateFormik,
+  isToday,
 };

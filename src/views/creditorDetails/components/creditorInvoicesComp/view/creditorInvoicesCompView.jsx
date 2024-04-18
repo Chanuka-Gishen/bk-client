@@ -18,6 +18,7 @@ import TableLoadingRow from 'src/components/custom-table/table-loading-row';
 import { InvoiceUpdateDialog } from '../component/invoiceUpdateDialog';
 import ConfirmationDialog from 'src/components/confirmation-dialog/confirmation-dialog';
 import { CredInvoiceRow } from '../component/credInvoiceRow';
+import { InvoicePaymentAddDialog } from '../component/invoicePaymentAddDialog';
 
 export const CreditorInvoicesCompView = ({
   isLoading,
@@ -33,6 +34,12 @@ export const CreditorInvoicesCompView = ({
   isLoadingDelete,
   handleOpenCloseDeleteDialog,
   handleDeleteInvoice,
+  openAddPayment,
+  isLoadingAddPayment,
+  formikPayInvoice,
+  handleOpenCloseAddPaymentDialog,
+  handleAddPayment,
+  handleFetchCreditorInvoices,
   page,
   rowsPerPage,
   handleChangePage,
@@ -47,6 +54,7 @@ export const CreditorInvoicesCompView = ({
         <Table sx={{ minWidth: 800 }}>
           <TableHead>
             <TableRow>
+              <TableCell></TableCell>
               {headers.map((item, index) => (
                 <TableCell align={item === 'Actions' ? 'right' : 'left'} key={index}>
                   {item}
@@ -72,6 +80,8 @@ export const CreditorInvoicesCompView = ({
                           setSelectedInvoice={setSelectedInvoice}
                           handleOpenCloseUpdateDialog={handleOpenCloseUpdateDialog}
                           handleOpenCloseDeleteDialog={handleOpenCloseDeleteDialog}
+                          handleOpenCloseAddPaymentDialog={handleOpenCloseAddPaymentDialog}
+                          handleFetchCreditorInvoices={handleFetchCreditorInvoices}
                         />
                       ))}
                   </>
@@ -106,6 +116,15 @@ export const CreditorInvoicesCompView = ({
           handleClose={handleOpenCloseDeleteDialog}
           handleSubmit={handleDeleteInvoice}
           isLoading={isLoadingDelete}
+        />
+      )}
+      {openAddPayment && (
+        <InvoicePaymentAddDialog
+          open={openAddPayment}
+          handleClose={handleOpenCloseAddPaymentDialog}
+          formik={formikPayInvoice}
+          handleSubmit={handleAddPayment}
+          isLoading={isLoadingAddPayment}
         />
       )}
     </Card>

@@ -4,19 +4,36 @@ import { IconButton, MenuItem, Popover, TableCell, TableRow } from '@mui/materia
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import PaidIcon from '@mui/icons-material/Paid';
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 
 import Label from 'src/components/label';
 import { PAYMENT_STATUS } from 'src/constants/commonConstants';
 import { formatCurrency } from 'src/utils/format-number';
 import { fDate } from 'src/utils/format-time';
+import { PaymentInvoices } from 'src/views/payments/components/creditPayments';
+
+const HistoryRow = ({ payment }) => {
+  return (
+    <TableRow>
+      <TableCell>{payment.invoiceNo}</TableCell>
+      <TableCell>{formatCurrency(payment.invoiceAmount)}</TableCell>
+      <TableCell>{fDate(payment.invoiceCreatedAt)}</TableCell>
+    </TableRow>
+  );
+};
 
 export const CredInvoiceRow = ({
   item,
   setSelectedInvoice,
   handleOpenCloseUpdateDialog,
   handleOpenCloseDeleteDialog,
+  handleOpenCloseAddPaymentDialog,
+  handleFetchCreditorInvoices,
 }) => {
   const [open, setOpen] = useState(null);
+  const [openRow, setOpenRow] = useState(false);
 
   const handleOpenMenu = (event, item) => {
     setSelectedInvoice(item);
@@ -31,11 +48,22 @@ export const CredInvoiceRow = ({
   return (
     <Fragment>
       <TableRow>
+        <TableCell>
+          <IconButton
+            aria-label="expand row"
+            size="small"
+            onClick={() => setOpenRow(!openRow)}
+            disabled={item.invoices && item.invoices.length === 0}
+          >
+            {openRow ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+          </IconButton>
+        </TableCell>
         <TableCell>{item.credInvoiceNo}</TableCell>
         <TableCell>{fDate(item.credInvoiceDate)}</TableCell>
         <TableCell>{fDate(item.credInvoiceDueDate)}</TableCell>
         <TableCell>{fDate(item.credInvoicePaidDate)}</TableCell>
         <TableCell>{formatCurrency(item.credInvoiceAmount)}</TableCell>
+        <TableCell>{formatCurrency(item.credInvoiceBalance)}</TableCell>
         <TableCell>
           <Label color={item.credInvoiceStatus === PAYMENT_STATUS.PAID ? 'success' : 'error'}>
             {item.credInvoiceStatus}
@@ -47,6 +75,9 @@ export const CredInvoiceRow = ({
           </IconButton>
         </TableCell>
       </TableRow>
+      {openRow && (
+        <PaymentInvoices open={openRow} id={item._id} handleFetch={handleFetchCreditorInvoices} />
+      )}
       <Popover
         open={!!open}
         anchorEl={open}
@@ -62,10 +93,16 @@ export const CredInvoiceRow = ({
           Update
         </MenuItem>
         {item.credInvoiceStatus === PAYMENT_STATUS.NOTPAID && (
-          <MenuItem onClick={handleOpenCloseDeleteDialog}>
-            <DeleteIcon fontSize="small" sx={{ mr: 1 }} />
-            Delete
-          </MenuItem>
+          <>
+            <MenuItem onClick={handleOpenCloseAddPaymentDialog}>
+              <PaidIcon fontSize="small" sx={{ mr: 1 }} />
+              Payment
+            </MenuItem>
+            <MenuItem onClick={handleOpenCloseDeleteDialog}>
+              <DeleteIcon fontSize="small" sx={{ mr: 1 }} />
+              Delete
+            </MenuItem>
+          </>
         )}
       </Popover>
     </Fragment>

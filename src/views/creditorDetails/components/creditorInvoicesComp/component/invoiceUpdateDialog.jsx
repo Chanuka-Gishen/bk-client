@@ -65,7 +65,7 @@ export const InvoiceUpdateDialog = ({ open, handleClose, formik, handleSubmit, i
                 <FormHelperText error>{errors.credInvoiceDate}</FormHelperText>
               )}
             </Grid>
-            <Grid item xs={12} sm={6}>
+            {/* <Grid item xs={12} sm={6}>
               <FormControl fullWidth>
                 <InputLabel>Payment Status*</InputLabel>
                 <Select id="select" label="Payment Status" {...getFieldProps('credInvoiceStatus')}>
@@ -78,7 +78,7 @@ export const InvoiceUpdateDialog = ({ open, handleClose, formik, handleSubmit, i
                   </FormHelperText>
                 )}
               </FormControl>
-            </Grid>
+            </Grid> */}
             {values.credInvoiceStatus === PAYMENT_STATUS.PAID && (
               <Grid item xs={12} sm={6}>
                 <DatePicker

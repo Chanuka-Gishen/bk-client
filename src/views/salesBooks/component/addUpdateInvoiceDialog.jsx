@@ -16,9 +16,11 @@ import { LoadingButton } from '@mui/lab';
 import { DatePicker } from '@mui/x-date-pickers';
 
 import { CurrencyInput } from 'src/components/currency-input/currency-input';
+import { INVOICE_TYPES } from 'src/constants/invoiceTypeConstants';
 
 export const AddUpdateInvoiceDialog = ({
   isAdd,
+  bookType,
   open,
   handleClose,
   formik,
@@ -33,44 +35,57 @@ export const AddUpdateInvoiceDialog = ({
       <DialogContent>
         <FormikProvider value={formik}>
           <Grid container spacing={2} sx={{ mt: 2 }}>
-            <Grid item xs={12} sm={3}>
-              <TextField
-                label="Invoice No From*"
-                fullWidth
-                autoComplete="off"
-                variant="outlined"
-                type="number"
-                {...getFieldProps('invoiceNoFrom')}
-                error={Boolean(touched.invoiceNoFrom && errors.invoiceNoFrom)}
-                helperText={touched.invoiceNoFrom && errors.invoiceNoFrom}
-              />
-            </Grid>
-            <Grid item xs={12} sm={3}>
-              <TextField
-                label="Invoice No To*"
-                fullWidth
-                autoComplete="off"
-                variant="outlined"
-                type="number"
-                {...getFieldProps('invoiceNoTo')}
-                error={Boolean(touched.invoiceNoTo && errors.invoiceNoTo)}
-                helperText={touched.invoiceNoTo && errors.invoiceNoTo}
-              />
-            </Grid>
+            {bookType === INVOICE_TYPES.RANGE ? (
+              <>
+                <Grid item xs={12} sm={3}>
+                  <TextField
+                    label="Invoice No From*"
+                    fullWidth
+                    autoComplete="off"
+                    variant="outlined"
+                    type="number"
+                    {...getFieldProps('invoiceNoFrom')}
+                    error={Boolean(touched.invoiceNoFrom && errors.invoiceNoFrom)}
+                    helperText={touched.invoiceNoFrom && errors.invoiceNoFrom}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={3}>
+                  <TextField
+                    label="Invoice No To*"
+                    fullWidth
+                    autoComplete="off"
+                    variant="outlined"
+                    type="number"
+                    {...getFieldProps('invoiceNoTo')}
+                    error={Boolean(touched.invoiceNoTo && errors.invoiceNoTo)}
+                    helperText={touched.invoiceNoTo && errors.invoiceNoTo}
+                  />
+                </Grid>
+              </>
+            ) : (
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  label="Invoice No*"
+                  fullWidth
+                  autoComplete="off"
+                  variant="outlined"
+                  type="number"
+                  {...getFieldProps('invoiceNo')}
+                  error={Boolean(touched.invoiceNo && errors.invoiceNo)}
+                  helperText={touched.invoiceNo && errors.invoiceNo}
+                />
+              </Grid>
+            )}
             <Grid item xs={12} sm={6}>
               <TextField
-                label="Amount*"
+                label="Description"
                 fullWidth
                 autoComplete="off"
                 variant="outlined"
-                {...getFieldProps('invoiceAmount')}
-                error={Boolean(touched.invoiceAmount && errors.invoiceAmount)}
-                helperText={touched.invoiceAmount && errors.invoiceAmount}
-                InputProps={{
-                  inputComponent: CurrencyInput,
-                }}
+                {...getFieldProps('invoiceDescription')}
               />
             </Grid>
+
             <Grid item xs={12} sm={6}>
               <DatePicker
                 label="Invoiced Created At*"
@@ -80,6 +95,34 @@ export const AddUpdateInvoiceDialog = ({
               {touched.invoiceCreatedAt && errors.invoiceCreatedAt && (
                 <FormHelperText error>{errors.invoiceCreatedAt}</FormHelperText>
               )}
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                label="Amount IN*"
+                fullWidth
+                autoComplete="off"
+                variant="outlined"
+                {...getFieldProps('invoiceInAmount')}
+                error={Boolean(touched.invoiceInAmount && errors.invoiceInAmount)}
+                helperText={touched.invoiceInAmount && errors.invoiceInAmount}
+                InputProps={{
+                  inputComponent: CurrencyInput,
+                }}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                label="Amount OUT*"
+                fullWidth
+                autoComplete="off"
+                variant="outlined"
+                {...getFieldProps('invoiceOutAmount')}
+                error={Boolean(touched.invoiceOutAmount && errors.invoiceOutAmount)}
+                helperText={touched.invoiceOutAmount && errors.invoiceOutAmount}
+                InputProps={{
+                  inputComponent: CurrencyInput,
+                }}
+              />
             </Grid>
           </Grid>
         </FormikProvider>

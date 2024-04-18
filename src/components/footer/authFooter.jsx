@@ -19,11 +19,11 @@ const AuthFooter = () => {
           <Typography
             component={Link}
             variant="subtitle2"
-            href="#"
+            href="www.zenxbyte.com"
             target="_blank"
             underline="hover"
           >
-            ZenByte
+            Zenxbyte
           </Typography>
         </Typography>
       </Stack>
