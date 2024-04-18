@@ -25,3 +25,9 @@ export function fToNow(date) {
       })
     : '';
 }
+
+export const getTodayDate = () => {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0); // Set time to start of the day
+  return today;
+};

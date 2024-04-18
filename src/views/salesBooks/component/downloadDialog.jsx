@@ -2,10 +2,10 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Grid } from '@mui/material';
-import { FormikProvider } from 'formik';
 import { DatePicker } from '@mui/x-date-pickers';
 
 import { Download } from '@mui/icons-material';
+import { getTodayDate } from 'src/utils/format-time';
 
 export const DownloadDialog = ({
   open,
@@ -30,6 +30,7 @@ export const DownloadDialog = ({
             <DatePicker
               label="Selected Date*"
               value={downloadDate}
+              maxDate={getTodayDate()}
               onChange={(date) => handleChange(date)}
             />
           </Grid>

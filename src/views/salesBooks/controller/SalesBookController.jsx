@@ -12,6 +12,7 @@ import responseUtil from 'src/utils/responseUtil';
 import { SNACKBAR_MESSAGE, SNACKBAR_VARIANT } from 'src/constants/snackbarConstants';
 import { INVOICE_TYPES } from 'src/constants/invoiceTypeConstants';
 import commonUtil from 'src/utils/common-util';
+import { fDate } from 'src/utils/format-time';
 
 const validationSchema = Yup.object().shape({
   bookName: Yup.string().required('Boook name is required'),
@@ -70,7 +71,7 @@ const SalesBookController = () => {
   const [invoiceStats, setInvoiceStats] = useState(null);
   const [selectedInvoice, setSelectedInvoice] = useState(null);
   const [filteredDate, setFilteredDate] = useState(null);
-  const [downloadDate, setDownloadDate] = useState(null);
+  const [downloadDate, setDownloadDate] = useState(new Date());
   const [selectedFile, setSelectedFile] = useState(null);
   const [cashBalance, setCashBalance] = useState(0);
 
@@ -237,6 +238,10 @@ const SalesBookController = () => {
 
   const handleOpenCloseDownloadReportDialog = () => {
     setIsOpenDownloadInvoice(!isOpenDownloadInvoice);
+
+    if (isOpenDownloadInvoice) {
+      setDownloadDate(new Date());
+    }
   };
 
   const handleCreateSalesBook = async () => {
@@ -521,9 +526,7 @@ const SalesBookController = () => {
     try {
       if (downloadDate) {
         // Make a GET request to the endpoint that generates the PDF
-        const response = await axios.get(BACKEND_API.SBOOK_DOWNLOAD_SUM, {
-          params: { date: downloadDate },
-        });
+        const response = await fetch(`${BACKEND_API.SBOOK_DOWNLOAD_SUM}?date=${downloadDate}`);
 
         // Check if the response is successful
         if (!response.ok) {
@@ -539,11 +542,7 @@ const SalesBookController = () => {
         // Create a link element
         const link = document.createElement('a');
         link.href = url;
-        link.download = `${
-          workOrder.workOrderLinked.length === 0
-            ? workOrder.workOrderInvoice.invoiceNumber
-            : workOrder.workOrderCode
-        }.pdf`;
+        link.download = `${fDate(downloadDate)}-report.pdf`;
         document.body.appendChild(link);
 
         // Simulate a click on the link to trigger the download
