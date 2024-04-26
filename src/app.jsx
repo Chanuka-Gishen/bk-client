@@ -2,7 +2,7 @@ import { createRef } from 'react';
 
 import Routes from './routes';
 import { LocalizationProvider } from '@mui/x-date-pickers';
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFnsV3';
 
 import { SnackbarProvider } from 'notistack';
 import { IconButton } from '@mui/material';
