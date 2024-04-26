@@ -100,7 +100,7 @@ const PaymentsController = () => {
   };
 
   const handleSelectedDateChange = (date) => {
-    setSelectedDate(date);
+    setSelectedDate(new Date(date));
   };
 
   const handleClearDate = () => {

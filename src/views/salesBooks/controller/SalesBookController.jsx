@@ -145,11 +145,11 @@ const SalesBookController = () => {
   };
 
   const handleFilterDateChange = (date) => {
-    setFilteredDate(date);
+    setFilteredDate(date ? new Date(date) : null);
   };
 
   const handleChangeDownloadDate = (date) => {
-    setDownloadDate(date);
+    setDownloadDate(new Date(date));
   };
 
   const handleOpenCloseCreateDialog = () => {
