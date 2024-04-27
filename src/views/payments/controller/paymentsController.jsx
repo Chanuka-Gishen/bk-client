@@ -243,7 +243,9 @@ const PaymentsController = () => {
 
   const handleFetchTotalAmount = async () => {
     const date = new Date(formikFilter.values.filteredDate);
-    const dayAfter = new Date(date.setDate(date.getDate() + 1));
+    const dayAfter = formikFilter.values.filteredDate
+      ? new Date(date.setDate(date.getDate() + 1))
+      : null;
 
     setIsLoadingTotal(true);
 
@@ -268,7 +270,9 @@ const PaymentsController = () => {
 
   const handleFetchPayments = async () => {
     const date = new Date(formikFilter.values.filteredDate);
-    const dayAfter = new Date(date.setDate(date.getDate() + 1));
+    const dayAfter = formikFilter.values.filteredDate
+      ? new Date(date.setDate(date.getDate() + 1))
+      : null;
 
     setIsLoading(true);
 
