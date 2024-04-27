@@ -280,6 +280,9 @@ const SalesBookController = () => {
 
   const handleFetchInvoices = async () => {
     if (selectedBook) {
+      const date = new Date(formikFilter.values.filteredDate);
+      const dayAfter = new Date(date.setDate(date.getDate() + 1));
+
       setIsLoadingInvoices(true);
 
       await backendAuthApi({
@@ -290,7 +293,7 @@ const SalesBookController = () => {
           limit: rowsPerPage,
         },
         cancelToken: sourceToken.token,
-        data: formikFilter.values,
+        data: { filteredDate: dayAfter },
       })
         .then((res) => {
           if (responseUtil.isResponseSuccess(res.data.responseCode)) {
@@ -308,13 +311,16 @@ const SalesBookController = () => {
   };
 
   const handleFetchSalesBookStats = async () => {
+    const date = new Date(formikFilter.values.filteredDate);
+    const dayAfter = new Date(date.setDate(date.getDate() + 1));
+
     setIsLoadingInvoicesStats(true);
 
     await backendAuthApi({
       url: `${BACKEND_API.INVOICE_STATS_AMOUNT + selectedBook._id}/${selectedBook.bookType}`,
       method: 'POST',
       cancelToken: sourceToken.token,
-      data: formikFilter.values,
+      data: { filteredDate: dayAfter },
     })
       .then((res) => {
         if (responseUtil.isResponseSuccess(res.data.responseCode)) {
