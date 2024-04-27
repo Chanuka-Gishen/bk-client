@@ -73,8 +73,7 @@ export const SalesBookView = ({
   isLoadingInvoices,
   invoices,
   invoiceStats,
-  filteredDate,
-  handleFilterDateChange,
+  formikFilter,
   isLoadingInvoicesStats,
   setSelectedInvoice,
   handleAddInvoice,
@@ -296,10 +295,10 @@ export const SalesBookView = ({
                     <Grid item xs={12} sm={3}>
                       <Stack direction="row" spacing={2}>
                         <DatePicker
-                          onChange={(date) => handleFilterDateChange(date)}
-                          value={filteredDate}
+                          onChange={(date) => formikFilter.setFieldValue('filteredDate', date)}
+                          value={formikFilter.values.filteredDate}
                         />
-                        <IconButton onClick={() => handleFilterDateChange(null)} size="large">
+                        <IconButton onClick={() => formikFilter.resetForm()} size="large">
                           <CloseCircleFilled />
                         </IconButton>
                       </Stack>

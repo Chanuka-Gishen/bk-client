@@ -70,7 +70,6 @@ const SalesBookController = () => {
   const [invoices, setInvoices] = useState([]);
   const [invoiceStats, setInvoiceStats] = useState(null);
   const [selectedInvoice, setSelectedInvoice] = useState(null);
-  const [filteredDate, setFilteredDate] = useState(null);
   const [downloadDate, setDownloadDate] = useState(new Date());
   const [selectedFile, setSelectedFile] = useState(null);
   const [cashBalance, setCashBalance] = useState(0);
@@ -135,6 +134,15 @@ const SalesBookController = () => {
     },
   });
 
+  const formikFilter = useFormik({
+    initialValues: {
+      filteredDate: null,
+    },
+    onSubmit: () => {
+      null;
+    },
+  });
+
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
   };
@@ -142,10 +150,6 @@ const SalesBookController = () => {
   const handleChangeRowsPerPage = (event) => {
     setPage(0);
     setRowsPerPage(parseInt(event.target.value, 10));
-  };
-
-  const handleFilterDateChange = (date) => {
-    setFilteredDate(date ? new Date(date) : null);
   };
 
   const handleChangeDownloadDate = (date) => {
@@ -286,9 +290,7 @@ const SalesBookController = () => {
           limit: rowsPerPage,
         },
         cancelToken: sourceToken.token,
-        data: {
-          filteredDate: filteredDate,
-        },
+        data: formikFilter.values,
       })
         .then((res) => {
           if (responseUtil.isResponseSuccess(res.data.responseCode)) {
@@ -312,9 +314,7 @@ const SalesBookController = () => {
       url: `${BACKEND_API.INVOICE_STATS_AMOUNT + selectedBook._id}/${selectedBook.bookType}`,
       method: 'POST',
       cancelToken: sourceToken.token,
-      data: {
-        filteredDate,
-      },
+      data: formikFilter.values,
     })
       .then((res) => {
         if (responseUtil.isResponseSuccess(res.data.responseCode)) {
@@ -615,7 +615,7 @@ const SalesBookController = () => {
       handleFetchSalesBookStats();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedBook, filteredDate, page, rowsPerPage]);
+  }, [selectedBook, formikFilter.values.filteredDate, page, rowsPerPage]);
 
   return (
     <SalesBookView
@@ -641,8 +641,7 @@ const SalesBookController = () => {
       invoiceStats={invoiceStats}
       isLoadingInvoicesStats={isLoadingInvoicesStats}
       setSelectedInvoice={setSelectedInvoice}
-      filteredDate={filteredDate}
-      handleFilterDateChange={handleFilterDateChange}
+      formikFilter={formikFilter}
       formikInvoice={formikInvoice}
       formikInvoiceSingle={formikInvoiceSingle}
       isOpenAddInvoiceDialog={isOpenAddInvoiceDialog}
