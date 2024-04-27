@@ -281,7 +281,9 @@ const SalesBookController = () => {
   const handleFetchInvoices = async () => {
     if (selectedBook) {
       const date = new Date(formikFilter.values.filteredDate);
-      const dayAfter = new Date(date.setDate(date.getDate() + 1));
+      const dayAfter = formikFilter.values.filteredDate
+        ? new Date(date.setDate(date.getDate() + 1))
+        : null;
 
       setIsLoadingInvoices(true);
 
@@ -312,7 +314,9 @@ const SalesBookController = () => {
 
   const handleFetchSalesBookStats = async () => {
     const date = new Date(formikFilter.values.filteredDate);
-    const dayAfter = new Date(date.setDate(date.getDate() + 1));
+    const dayAfter = formikFilter.values.filteredDate
+      ? new Date(date.setDate(date.getDate() + 1))
+      : null;
 
     setIsLoadingInvoicesStats(true);
 
