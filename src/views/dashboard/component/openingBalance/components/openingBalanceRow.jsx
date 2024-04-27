@@ -33,10 +33,7 @@ export const OpeningBalanceRow = ({
         <TableCell>{fDate(record.cashBalanceDate)}</TableCell>
         <TableCell>{formatCurrency(record.openingBalance)}</TableCell>
         <TableCell align="right">
-          <IconButton
-            onClick={handleOpenMenu}
-            disabled={!commonUtil.isToday(record.cashBalanceDate)}
-          >
+          <IconButton onClick={handleOpenMenu}>
             <MoreVertIcon />
           </IconButton>
         </TableCell>

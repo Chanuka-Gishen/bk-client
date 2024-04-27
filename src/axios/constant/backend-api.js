@@ -49,6 +49,7 @@ export const BACKEND_API = {
   PAYMENT_DELETE: IP_URL + 'payment/delete/',
   PAYMENTS: IP_URL + 'payment/invoices',
 
+  CASHB_ADD: IP_URL + 'balance/add',
   CASHB_GET_RECENT: IP_URL + 'balance/recent',
   CASHB_GET_TODAY: IP_URL + 'balance/today',
   CASHB_UPDATE: IP_URL + 'balance/update',
