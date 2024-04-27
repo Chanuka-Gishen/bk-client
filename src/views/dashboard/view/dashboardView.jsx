@@ -1,30 +1,20 @@
 import React from 'react';
 
 // material-ui
-import {
-  Button,
-  Grid,
-  MenuItem,
-  Select,
-  Stack,
-  TablePagination,
-  TextField,
-  Typography,
-} from '@mui/material';
+import { Button, Grid, Stack, TablePagination, TextField, Typography } from '@mui/material';
 
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
 
 import MainCard from 'src/components/mainCard';
 import { DueInvoicesTable } from '../component/dueInvoicesTable';
-import { OpeningBalanceTable } from '../component/openingBalanceTable';
+import { OpeningBalanceTable } from '../component/openingBalance/components/openingBalanceTable';
 import { fDate } from 'src/utils/format-time';
 import { SelectDateRange } from '../component/selectDateRange';
+import { OpeningBalance } from '../component/openingBalance';
 
 export const DashboardView = ({
-  selectedDays,
   isLoadingDueInvoices,
   dueInvocies,
-  handleSelectDueDays,
   headersDueInvoice,
   formikDateRange,
   openSelectDate,
@@ -36,19 +26,6 @@ export const DashboardView = ({
   rowsPerPage,
   handleChangePage,
   handleChangeRowsPerPage,
-  isLoadingCashBalance,
-  cashRecords,
-  headersCashBalances,
-  setSelectedCashRecord,
-  formikCash,
-  openCashUpdate,
-  isLoadingCashUpdate,
-  handleOpenCloseCashUpdate,
-  handleUpdateOpeningCashBalance,
-  openCashRefresh,
-  isLoadingCashRefresh,
-  handleOpenCloseCashRefresh,
-  handleResetOpeningBalance,
 }) => {
   return (
     <>
@@ -97,24 +74,7 @@ export const DashboardView = ({
           />
         </Grid>
         <Grid item xs={12} sm={4}>
-          <Typography variant="h5">Recent Opening Balances</Typography>
-          <MainCard sx={{ mt: 2 }} content={false}>
-            <OpeningBalanceTable
-              headers={headersCashBalances}
-              isLoading={isLoadingCashBalance}
-              records={cashRecords}
-              setSelectedCashRecord={setSelectedCashRecord}
-              formikCash={formikCash}
-              openCashUpdate={openCashUpdate}
-              isLoadingCashUpdate={isLoadingCashUpdate}
-              handleOpenCloseCashUpdate={handleOpenCloseCashUpdate}
-              handleUpdateOpeningCashBalance={handleUpdateOpeningCashBalance}
-              openCashRefresh={openCashRefresh}
-              isLoadingCashRefresh={isLoadingCashRefresh}
-              handleOpenCloseCashRefresh={handleOpenCloseCashRefresh}
-              handleResetOpeningBalance={handleResetOpeningBalance}
-            />
-          </MainCard>
+          <OpeningBalance />
         </Grid>
       </Grid>
       {openSelectDate && (

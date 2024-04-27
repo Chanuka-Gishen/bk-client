@@ -23,7 +23,7 @@ const AuthFooter = () => {
             target="_blank"
             underline="hover"
           >
-            Zenxbyte
+            ZenXbyte
           </Typography>
         </Typography>
       </Stack>
