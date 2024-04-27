@@ -242,13 +242,16 @@ const PaymentsController = () => {
   };
 
   const handleFetchTotalAmount = async () => {
+    const date = new Date(formikFilter.values.filteredDate);
+    const dayAfter = new Date(date.setDate(date.getDate() + 1));
+
     setIsLoadingTotal(true);
 
     await backendAuthApi({
       url: BACKEND_API.INVOICE_TOTAL_CRED_PAYMENTS,
       method: 'POST',
       cancelToken: sourceToken.token,
-      data: formikFilter.values,
+      data: { filteredDate: dayAfter },
     })
       .then((res) => {
         if (responseUtil.isResponseSuccess(res.data.responseCode)) {
@@ -264,6 +267,9 @@ const PaymentsController = () => {
   };
 
   const handleFetchPayments = async () => {
+    const date = new Date(formikFilter.values.filteredDate);
+    const dayAfter = new Date(date.setDate(date.getDate() + 1));
+
     setIsLoading(true);
 
     await backendAuthApi({
@@ -274,7 +280,7 @@ const PaymentsController = () => {
         page: page,
         limit: rowsPerPage,
       },
-      data: formikFilter.values,
+      data: { filteredDate: dayAfter },
     })
       .then((res) => {
         if (responseUtil.isResponseSuccess(res.data.responseCode)) {
