@@ -58,9 +58,7 @@ export const PaymentsView = ({
   handleSubmitUpdate,
   handleSubmitDelete,
   handleFetchPayments,
-  selectedDate,
-  handleSelectedDateChange,
-  handleClearDate,
+  formikFilter,
   page,
   count,
   rowsPerPage,
@@ -91,7 +89,7 @@ export const PaymentsView = ({
                   <Chip
                     variant="combined"
                     icon={<CalendarMonthIcon />}
-                    label={`${fDate(selectedDate ? selectedDate : new Date())}`}
+                    label={`${fDate(formikFilter.values.filteredDate ? formikFilter.values.filteredDate : new Date())}`}
                     sx={{ mt: 1 }}
                     size="small"
                   />
@@ -127,10 +125,10 @@ export const PaymentsView = ({
                 <Grid item xs={12} sm={3}>
                   <Stack direction="row" spacing={2}>
                     <DatePicker
-                      onChange={(date) => handleSelectedDateChange(date)}
-                      value={selectedDate}
+                      onChange={(date) => formikFilter.setFieldValue('filteredDate', date)}
+                      value={formikFilter.values.filteredDate}
                     />
-                    <IconButton onClick={handleClearDate} size="large">
+                    <IconButton onClick={() => formikFilter.resetForm()} size="large">
                       <CloseCircleFilled />
                     </IconButton>
                   </Stack>

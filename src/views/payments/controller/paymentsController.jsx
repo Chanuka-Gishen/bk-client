@@ -48,7 +48,6 @@ const PaymentsController = () => {
   const [invoices, setInvoices] = useState([]);
   const [totalPayments, setTotalPayments] = useState(0);
   const [selectedInvoice, setSelectedInvoice] = useState(null);
-  const [selectedDate, setSelectedDate] = useState(null);
 
   const [page, setPage] = useState(0);
   const [count, setCount] = useState(0);
@@ -90,6 +89,15 @@ const PaymentsController = () => {
     },
   });
 
+  const formikFilter = useFormik({
+    initialValues: {
+      filteredDate: null,
+    },
+    onSubmit: () => {
+      null;
+    },
+  });
+
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
   };
@@ -97,14 +105,6 @@ const PaymentsController = () => {
   const handleChangeRowsPerPage = (event) => {
     setPage(0);
     setRowsPerPage(parseInt(event.target.value, 10));
-  };
-
-  const handleSelectedDateChange = (date) => {
-    setSelectedDate(new Date(date));
-  };
-
-  const handleClearDate = () => {
-    setSelectedDate(null);
   };
 
   const handleSearchInputChange = (event) => {
@@ -248,9 +248,7 @@ const PaymentsController = () => {
       url: BACKEND_API.INVOICE_TOTAL_CRED_PAYMENTS,
       method: 'POST',
       cancelToken: sourceToken.token,
-      data: {
-        filteredDate: selectedDate,
-      },
+      data: formikFilter.values,
     })
       .then((res) => {
         if (responseUtil.isResponseSuccess(res.data.responseCode)) {
@@ -276,9 +274,7 @@ const PaymentsController = () => {
         page: page,
         limit: rowsPerPage,
       },
-      data: {
-        filteredDate: selectedDate,
-      },
+      data: formikFilter.values,
     })
       .then((res) => {
         if (responseUtil.isResponseSuccess(res.data.responseCode)) {
@@ -299,7 +295,7 @@ const PaymentsController = () => {
     handleFetchTotalAmount();
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedDate, page, rowsPerPage]);
+  }, [formikFilter.values.filteredDate, page, rowsPerPage]);
 
   return (
     <PaymentsView
@@ -327,9 +323,7 @@ const PaymentsController = () => {
       handleSubmitUpdate={handleSubmitUpdate}
       handleSubmitDelete={handleSubmitDelete}
       handleFetchPayments={handleFetchPayments}
-      selectedDate={selectedDate}
-      handleSelectedDateChange={handleSelectedDateChange}
-      handleClearDate={handleClearDate}
+      formikFilter={formikFilter}
       page={page}
       count={count}
       rowsPerPage={rowsPerPage}
