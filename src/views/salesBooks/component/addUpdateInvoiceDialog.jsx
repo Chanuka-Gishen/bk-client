@@ -98,27 +98,13 @@ export const AddUpdateInvoiceDialog = ({
             </Grid>
             <Grid item xs={12} sm={6}>
               <TextField
-                label="Amount IN*"
+                label="Amount*"
                 fullWidth
                 autoComplete="off"
                 variant="outlined"
-                {...getFieldProps('invoiceInAmount')}
-                error={Boolean(touched.invoiceInAmount && errors.invoiceInAmount)}
-                helperText={touched.invoiceInAmount && errors.invoiceInAmount}
-                InputProps={{
-                  inputComponent: CurrencyInput,
-                }}
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                label="Amount OUT*"
-                fullWidth
-                autoComplete="off"
-                variant="outlined"
-                {...getFieldProps('invoiceOutAmount')}
-                error={Boolean(touched.invoiceOutAmount && errors.invoiceOutAmount)}
-                helperText={touched.invoiceOutAmount && errors.invoiceOutAmount}
+                {...getFieldProps('invoiceAmount')}
+                error={Boolean(touched.invoiceAmount && errors.invoiceAmount)}
+                helperText={touched.invoiceAmount && errors.invoiceAmount}
                 InputProps={{
                   inputComponent: CurrencyInput,
                 }}

@@ -32,6 +32,7 @@ import { formatCurrency } from 'src/utils/format-number';
 import { DatePicker } from '@mui/x-date-pickers';
 import { CloseCircleFilled } from '@ant-design/icons';
 import { PaymentRow } from '../components/paymentRow';
+import { StatisticCard } from 'src/components/statCard';
 
 export const CredPaymentsView = ({
   headerLabels,
@@ -74,29 +75,12 @@ export const CredPaymentsView = ({
           <Typography variant="h4">Manage Creditor Payments</Typography>
         </Grid>
         <Grid item xs={12} sm={3}>
-          <MainCard contentSX={{ p: 2.25 }}>
-            <Stack spacing={0.5}>
-              <Typography variant="h6" color="textSecondary">
-                Total Creditors Payments
-              </Typography>
-              <Grid container alignItems="center">
-                <Grid item xs={12} sm={12}>
-                  <Typography variant="h4" color="inherit">
-                    {isLoadingTotal ? 'Loading...' : formatCurrency(totalPayments)}
-                  </Typography>
-                </Grid>
-                <Grid item xs={12} sm={12}>
-                  <Chip
-                    variant="combined"
-                    icon={<CalendarMonthIcon />}
-                    label={`${fDate(formikFilter.values.filteredDate ? formikFilter.values.filteredDate : new Date())}`}
-                    sx={{ mt: 1 }}
-                    size="small"
-                  />
-                </Grid>
-              </Grid>
-            </Stack>
-          </MainCard>
+          <StatisticCard
+            title={'Total Creditors Payments'}
+            isLoading={isLoadingTotal}
+            data={totalPayments}
+            date={formikFilter.values.filteredDate ? formikFilter.values.filteredDate : new Date()}
+          />
         </Grid>
         <Grid item xs={12} sm={12}>
           <Card>

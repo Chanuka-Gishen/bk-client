@@ -15,6 +15,7 @@ export const BACKEND_API = {
   SBOOK_CREATE: IP_URL + 'sales-book/create',
   SBOOK_UPDATE: IP_URL + 'sales-book/update',
   SBOOK_GET_ALL: IP_URL + 'sales-book/',
+  SBOOK_CASHB_TOTAL: IP_URL + 'sales-book/cash-balance-total',
   SBOOK_CASHB: IP_URL + 'sales-book/cash-balance',
   SBOOK_DOWNLOAD_SUM: IP_URL + 'sales-book/download-summary',
 

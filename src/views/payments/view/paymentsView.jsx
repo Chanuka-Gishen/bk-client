@@ -4,28 +4,21 @@ import proptypes from 'prop-types';
 import {
   Button,
   Card,
-  Chip,
   Grid,
   IconButton,
   Stack,
   Table,
   TableBody,
-  TableCell,
   TableContainer,
   TablePagination,
-  TableRow,
   Toolbar,
   Typography,
   useMediaQuery,
   useTheme,
 } from '@mui/material';
 
-import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import { Add, CloseOutlined } from '@mui/icons-material';
 
-import MainCard from 'src/components/mainCard';
-import { fDate } from 'src/utils/format-time';
-import { formatCurrency } from 'src/utils/format-number';
 import { AddUpdatePaymentDialog } from '../components/addUpdatePaymentDialog';
 import { DatePicker } from '@mui/x-date-pickers';
 import { CustomTableHead } from 'src/components/custom-table/custom-table-head';
@@ -33,6 +26,7 @@ import TableLoadingRow from 'src/components/custom-table/table-loading-row';
 import { PaymentInvoicesRow } from '../components/paymentInvoicesRow';
 import TableEmptyRow from 'src/components/custom-table/table-empty-row';
 import ConfirmationDialog from 'src/components/confirmation-dialog/confirmation-dialog';
+import { StatisticCard } from 'src/components/statCard';
 
 export const PaymentsView = ({
   headerLabels,
@@ -76,29 +70,12 @@ export const PaymentsView = ({
           </Stack>
         </Grid>
         <Grid item xs={12} sm={3}>
-          <MainCard contentSX={{ p: 2.25 }}>
-            <Stack spacing={0.5}>
-              <Typography variant="h6" color="textSecondary">
-                Total Payments
-              </Typography>
-              <Grid container alignItems="center">
-                <Grid item xs={12} sm={12}>
-                  <Typography variant="h4" color="inherit">
-                    {isLoadingTotal ? 'Loading...' : formatCurrency(totalPayments)}
-                  </Typography>
-                </Grid>
-                <Grid item xs={12} sm={12}>
-                  <Chip
-                    variant="combined"
-                    icon={<CalendarMonthIcon />}
-                    label={`${fDate(formikFilter.values.filteredDate ? formikFilter.values.filteredDate : new Date())}`}
-                    sx={{ mt: 1 }}
-                    size="small"
-                  />
-                </Grid>
-              </Grid>
-            </Stack>
-          </MainCard>
+          <StatisticCard
+            title={'Total Payments'}
+            isLoading={isLoadingTotal}
+            data={totalPayments}
+            date={formikFilter.values.filteredDate ? formikFilter.values.filteredDate : new Date()}
+          />
         </Grid>
         <Grid item xs={12} sm={12}>
           <Card>
