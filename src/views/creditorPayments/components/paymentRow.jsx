@@ -15,20 +15,6 @@ import Label from 'src/components/label';
 import { PAYMENT_STATUS } from 'src/constants/commonConstants';
 import { PaymentInvoices } from './creditPayments';
 
-// -------------------------------------------------------------
-
-const HistoryRow = ({ payment }) => {
-  return (
-    <TableRow>
-      <TableCell>{payment.invoiceNo}</TableCell>
-      <TableCell>{formatCurrency(payment.invoiceAmount)}</TableCell>
-      <TableCell>{fDate(payment.invoiceCreatedAt)}</TableCell>
-    </TableRow>
-  );
-};
-
-// -------------------------------------------------------------
-
 export const PaymentRow = ({
   invoice,
   setSelectedInvoice,

@@ -4,6 +4,7 @@ import {
   IdcardOutlined,
   ReadOutlined,
   DollarOutlined,
+  FallOutlined,
 } from '@ant-design/icons';
 import { USER_ROLE } from 'src/constants/userRole';
 import { NAVIGATION_ROUTES } from 'src/routes/constants/navigationRoutes';
@@ -14,6 +15,7 @@ const icons = {
   IdcardOutlined,
   ReadOutlined,
   DollarOutlined,
+  FallOutlined,
 };
 
 const menuItems = [
@@ -34,10 +36,10 @@ const menuItems = [
     users: [],
   },
   {
-    id: 'payments',
-    title: 'Payments',
+    id: 'creditor-payments',
+    title: 'Creditor Payments',
     type: 'item',
-    url: NAVIGATION_ROUTES.payments.base,
+    url: NAVIGATION_ROUTES.credPayments.base,
     icon: icons.DollarOutlined,
     users: [],
   },
@@ -47,6 +49,14 @@ const menuItems = [
     type: 'item',
     url: NAVIGATION_ROUTES.salesBooks,
     icon: icons.ReadOutlined,
+    users: [],
+  },
+  {
+    id: 'payments',
+    title: 'Payments',
+    type: 'item',
+    url: NAVIGATION_ROUTES.payments.base,
+    icon: icons.FallOutlined,
     users: [],
   },
   {
