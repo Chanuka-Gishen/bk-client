@@ -7,11 +7,8 @@ import {
   Card,
   CardActionArea,
   CardContent,
-  Chip,
-  Container,
   Grid,
   IconButton,
-  OutlinedInput,
   Stack,
   Table,
   TableBody,
@@ -31,8 +28,6 @@ import AddIcon from '@mui/icons-material/Add';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import EditIcon from '@mui/icons-material/Edit';
-import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
-import FileDownloadIcon from '@mui/icons-material/FileDownload';
 
 import { CloseCircleFilled } from '@ant-design/icons';
 
@@ -47,10 +42,9 @@ import { AddUpdateInvoiceDialog } from '../component/addUpdateInvoiceDialog';
 import ConfirmationDialog from 'src/components/confirmation-dialog/confirmation-dialog';
 import { AddInvoicesFileDialog } from '../component/addInvoicesFileDialog';
 import { INVOICE_TYPES } from 'src/constants/invoiceTypeConstants';
-import { formatCurrency } from 'src/utils/format-number';
 import { CurrencyInput } from 'src/components/currency-input/currency-input';
-import MainCard from 'src/components/mainCard';
 import { DownloadDialog } from '../component/downloadDialog';
+import { StatisticCard } from 'src/components/statCard';
 
 export const SalesBookView = ({
   bookType,
@@ -113,29 +107,12 @@ export const SalesBookView = ({
     <>
       <Grid container columnSpacing={2} rowSpacing={4}>
         <Grid item xs={12} sm={3}>
-          <MainCard contentSX={{ p: 2.25 }}>
-            <Stack spacing={0.5}>
-              <Typography variant="h6" color="textSecondary">
-                Total Cash Balance
-              </Typography>
-              <Grid container alignItems="center">
-                <Grid item xs={12} sm={12}>
-                  <Typography variant="h4" color="inherit">
-                    {isLoadingCashBalance ? 'Loading...' : formatCurrency(cashBalance)}
-                  </Typography>
-                </Grid>
-                <Grid item xs={12} sm={12}>
-                  <Chip
-                    variant="combined"
-                    icon={<CalendarMonthIcon />}
-                    label={`${fDate(new Date())}`}
-                    sx={{ mt: 1 }}
-                    size="small"
-                  />
-                </Grid>
-              </Grid>
-            </Stack>
-          </MainCard>
+          <StatisticCard
+            title={'Cash Balance'}
+            isLoading={isLoadingCashBalance}
+            data={cashBalance}
+            date={new Date()}
+          />
         </Grid>
         <Grid item xs={12} sm={12}>
           <Stack
@@ -165,6 +142,11 @@ export const SalesBookView = ({
             </Stack>
           </Stack>
         </Grid>
+        {isLoading && (
+          <Grid item xs={12} sm={12}>
+            <Typography align="center">Loading...</Typography>
+          </Grid>
+        )}
         {salesBooks.length > 0 && (
           <>
             {salesBooks.map((book, index) => (
@@ -189,7 +171,7 @@ export const SalesBookView = ({
         )}
         {selectedBook && (
           <>
-            <Grid item xs={12} sm={6}></Grid>
+            <Grid item xs={12} sm={12}></Grid>
             <Grid item xs={12} sm={6}>
               <Card>
                 <CardContent>
@@ -284,8 +266,8 @@ export const SalesBookView = ({
                     <Grid item xs={12} sm={4}>
                       <TextField
                         name="grossTotal"
-                        value={invoiceStats ? invoiceStats.netAmount : 0}
-                        label="Gross Total"
+                        value={invoiceStats ? invoiceStats.totalAmount : 0}
+                        label="Total Amount"
                         InputProps={{
                           inputComponent: CurrencyInput,
                           readOnly: true,
@@ -333,24 +315,6 @@ export const SalesBookView = ({
                                   handleOpenDeleteDialog={handleOpenCloseDeleteInvoiceDialog}
                                 />
                               ))}
-                              {invoiceStats && (
-                                <>
-                                  <TableRow sx={{ border: '1px solid #e0e0e0' }}>
-                                    <TableCell
-                                      variant="head"
-                                      colSpan={bookType === INVOICE_TYPES.RANGE ? 2 : 1}
-                                    ></TableCell>
-                                    <TableCell variant="head">Total</TableCell>
-                                    <TableCell>
-                                      {formatCurrency(invoiceStats.totalInAmount)}
-                                    </TableCell>
-                                    <TableCell>
-                                      {formatCurrency(invoiceStats.totalOutAmount)}
-                                    </TableCell>
-                                    <TableCell></TableCell>
-                                  </TableRow>
-                                </>
-                              )}
                             </>
                           ) : (
                             <TableEmptyRow colSpan={invoiceHeaders.length} />

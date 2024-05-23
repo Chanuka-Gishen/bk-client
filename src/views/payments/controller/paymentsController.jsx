@@ -1,89 +1,55 @@
 import React, { useEffect, useState } from 'react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
-import axios from 'axios';
-import { useSnackbar } from 'notistack';
 
 import { PaymentsView } from '../view/paymentsView';
+import axios from 'axios';
+import { useSnackbar } from 'notistack';
+import commonUtil from 'src/utils/common-util';
 import { SNACKBAR_MESSAGE, SNACKBAR_VARIANT } from 'src/constants/snackbarConstants';
 import { backendAuthApi } from 'src/axios/instance/backend-axios-instance';
 import { BACKEND_API } from 'src/axios/constant/backend-api';
 import responseUtil from 'src/utils/responseUtil';
-import commonUtil from 'src/utils/common-util';
-import { PAYMENT_STATUS } from 'src/constants/commonConstants';
 
-const validationInvoiceUpdate = Yup.object().shape({
-  credInvoiceNo: Yup.string().required('Invoice no is required'),
-  credInvoiceDate: Yup.string().required('Invoiced Date is required'),
-  credInvoiceAmount: Yup.number().required().min(0, 'Invoice amount is invalid'),
-  credInvoicePaidDate: Yup.string().required('Invoice paid date is required'),
-  credInvoiceStatus: Yup.string()
-    .required('Status required')
-    .oneOf([PAYMENT_STATUS.PAID, PAYMENT_STATUS.NOTPAID], 'Invalid Status'),
-});
+// ---------------------------------------------------------------------------
 
-const validationInvoicePayment = Yup.object().shape({
-  invoiceNo: Yup.string().required('Invoice no is required'),
-  invoiceAmount: Yup.number().required().min(0, 'Invoice amount is invalid'),
-  invoiceCreatedAt: Yup.string().required('Invoice created date is required'),
+const validationSchema = Yup.object().shape({
+  paymentDescription: Yup.string().required('Description is required'),
+  paymentAmount: Yup.number().required().min(0, 'Payment amount is invalid'),
+  paymentDate: Yup.date().required('Date is required'),
 });
 
 const PaymentsController = () => {
-  const headerLabels = [
-    '',
-    'Creditor',
-    'Invoice No',
-    'Amount',
-    'Balance Amount',
-    'Invoiced Date',
-    'Due Date',
-    'Status',
-    'Paid Date',
-  ];
+  const headerLabels = ['Date', 'Description', 'Paid Amount'];
 
   const sourceToken = axios.CancelToken.source();
   const { enqueueSnackbar } = useSnackbar();
 
-  const [searchTerm, setSearchTerm] = useState('');
   const [invoices, setInvoices] = useState([]);
   const [totalPayments, setTotalPayments] = useState(0);
-  const [selectedInvoice, setSelectedInvoice] = useState(null);
+  const [selectedInvoiceId, setSelectedInvoiceId] = useState(null);
 
   const [page, setPage] = useState(0);
   const [count, setCount] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
-  const [isOpenAdd, setIsOpenAdd] = useState(false);
-  const [isOpenUpdate, setIsOpenUpdate] = useState(false);
+  const [isAdd, setIsAdd] = useState(true);
+  const [isOpenAddUpdate, setIsOpenAddUpdate] = useState(false);
   const [isOpenDelete, setIsOpenDelete] = useState(false);
 
   const [isLoading, setIsLoading] = useState(false);
-  const [isLoadingTotal, setIsLoadingTotal] = useState(true);
-  const [isLoadingAddPayment, setIsLoadingAddPayment] = useState(false);
+  const [isLoadingTotal, setIsLoadingTotal] = useState(false);
+  const [isLoadingAdd, setIsLoadingAdd] = useState(false);
   const [isLoadingUpdate, setIsLoadingUpdate] = useState(false);
   const [isLoadingDelete, setIsLoadingDelete] = useState(false);
 
   const formik = useFormik({
     initialValues: {
-      credInvoiceNo: '',
-      credInvoiceDate: null,
-      credInvoiceAmount: 0,
-      credInvoicePaidDate: null,
-      credInvoiceStatus: PAYMENT_STATUS.NOTPAID,
+      paymentDescription: '',
+      paymentAmount: 0,
+      paymentDate: new Date(),
     },
-    validationSchema: validationInvoiceUpdate,
-    onSubmit: () => {
-      null;
-    },
-  });
-
-  const formikPayInvoice = useFormik({
-    initialValues: {
-      invoiceNo: '',
-      invoiceAmount: 0,
-      invoiceCreatedAt: new Date(),
-    },
-    validationSchema: validationInvoicePayment,
+    validationSchema,
     onSubmit: () => {
       null;
     },
@@ -107,36 +73,25 @@ const PaymentsController = () => {
     setRowsPerPage(parseInt(event.target.value, 10));
   };
 
-  const handleSearchInputChange = (event) => {
-    setSearchTerm(event.target.value);
-  };
-
-  const filteredData = invoices.filter((item) => {
-    const name = item.creditor.creditorName.toLowerCase();
-    const searchParamRegex = new RegExp(`${searchTerm.toLowerCase()}`, 'i');
-    return searchParamRegex.test(name);
-  });
-
   const handleOpenCloseAddDialog = () => {
-    setIsOpenAdd(!isOpenAdd);
+    setIsOpenAddUpdate(!isOpenAddUpdate);
 
-    if (isOpenAdd) {
-      formikPayInvoice.resetForm();
+    if (!isOpenAddUpdate) {
+      setIsAdd(true);
+    } else {
+      formik.resetForm();
     }
   };
 
-  const handleOpenCloseUpdateDialog = () => {
-    setIsOpenUpdate(!isOpenUpdate);
+  const handleOpenCloseUpdateDialog = (record) => {
+    setIsOpenAddUpdate(!isOpenAddUpdate);
 
-    if (!isOpenUpdate) {
+    if (!isOpenAddUpdate) {
+      setIsAdd(false);
       formik.setValues({
-        credInvoiceNo: selectedInvoice.credInvoiceNo,
-        credInvoiceAmount: selectedInvoice.credInvoiceAmount,
-        credInvoiceDate: new Date(selectedInvoice.credInvoiceDate),
-        credInvoicePaidDate: selectedInvoice.credInvoicePaidDate
-          ? new Date(selectedInvoice.credInvoicePaidDate)
-          : new Date(),
-        credInvoiceStatus: selectedInvoice.credInvoiceStatus,
+        paymentDescription: record.paymentDescription,
+        paymentAmount: record.paymentAmount,
+        paymentDate: new Date(record.paymentDate),
       });
     } else {
       formik.resetForm();
@@ -147,62 +102,66 @@ const PaymentsController = () => {
     setIsOpenDelete(!isOpenDelete);
   };
 
-  const handleSubmitAddPayment = async () => {
-    commonUtil.validateFormik(formikPayInvoice);
+  const handleAddPaymentSubmit = async () => {
+    commonUtil.validateFormik(formik);
 
-    if (formikPayInvoice.isValid && formikPayInvoice.dirty) {
-      setIsLoadingAddPayment(true);
+    if (formik.isValid && formik.dirty) {
+      setIsLoadingAdd(true);
 
       await backendAuthApi({
-        url: BACKEND_API.INVOICE_CREATE_CRED,
+        url: BACKEND_API.PAYMENT_ADD,
         method: 'POST',
         cancelToken: sourceToken.token,
-        data: {
-          credInvoiceId: selectedInvoice._id,
-          ...formikPayInvoice.values,
-        },
+        data: formik.values,
       })
         .then((res) => {
-          if (responseUtil.isResponseSuccess(res.data.responseCode)) {
+          const data = res.data;
+
+          if (responseUtil.isResponseSuccess(data.responseCode)) {
             handleOpenCloseAddDialog();
             handleFetchPayments();
           }
-          enqueueSnackbar(res.data.responseMessage, {
-            variant: responseUtil.findResponseType(res.data.responseCode),
+
+          enqueueSnackbar(data.responseMessage, {
+            variant: responseUtil.findResponseType(data.responseCode),
           });
         })
         .catch(() => {
-          setIsLoadingAddPayment(false);
+          setIsLoadingAdd(false);
         })
         .finally(() => {
-          setIsLoadingAddPayment(false);
+          setIsLoadingAdd(false);
         });
     } else {
       enqueueSnackbar(SNACKBAR_MESSAGE.FILL_REQUIRED_FIELDS, { variant: SNACKBAR_VARIANT.WARNING });
     }
   };
 
-  const handleSubmitUpdate = async () => {
+  const handleUpdatePaymentSubmit = async () => {
     commonUtil.validateFormik(formik);
+
     if (formik.isValid && formik.dirty) {
       setIsLoadingUpdate(true);
 
       await backendAuthApi({
-        url: BACKEND_API.CREDITOR_UPDATE_INVOICE,
+        url: BACKEND_API.PAYMENT_UPDATE,
         method: 'PUT',
         cancelToken: sourceToken.token,
         data: {
-          credId: selectedInvoice._id,
+          id: selectedInvoiceId,
           ...formik.values,
         },
       })
         .then((res) => {
-          if (responseUtil.isResponseSuccess(res.data.responseCode)) {
+          const data = res.data;
+
+          if (responseUtil.isResponseSuccess(data.responseCode)) {
             handleOpenCloseUpdateDialog(null);
             handleFetchPayments();
           }
-          enqueueSnackbar(res.data.responseMessage, {
-            variant: responseUtil.findResponseType(res.data.responseCode),
+
+          enqueueSnackbar(data.responseMessage, {
+            variant: responseUtil.findResponseType(data.responseCode),
           });
         })
         .catch(() => {
@@ -216,48 +175,50 @@ const PaymentsController = () => {
     }
   };
 
-  const handleSubmitDelete = async () => {
-    setIsLoadingDelete(true);
+  const handleDeletePaymentSubmit = async () => {
+    if (selectedInvoiceId) {
+      setIsLoadingDelete(true);
 
-    await backendAuthApi({
-      url: BACKEND_API.CREDITOR_DELETE_INVOICE + selectedInvoice._id,
-      method: 'DELETE',
-      cancelToken: sourceToken.token,
-    })
-      .then((res) => {
-        if (responseUtil.isResponseSuccess(res.data.responseCode)) {
-          handleOpenCloseDeleteDialog();
-          handleFetchPayments();
-        }
-        enqueueSnackbar(res.data.responseMessage, {
-          variant: responseUtil.findResponseType(res.data.responseCode),
+      await backendAuthApi({
+        url: BACKEND_API.PAYMENT_DELETE + selectedInvoiceId,
+        method: 'DELETE',
+        cancelToken: sourceToken.token,
+      })
+        .then((res) => {
+          const data = res.data;
+
+          if (responseUtil.isResponseSuccess(data.responseCode)) {
+            handleOpenCloseDeleteDialog();
+            handleFetchPayments();
+          }
+
+          enqueueSnackbar(data.responseMessage, {
+            variant: responseUtil.findResponseType(data.responseCode),
+          });
+        })
+        .catch(() => {
+          setIsLoadingDelete(false);
+        })
+        .finally(() => {
+          setIsLoadingDelete(false);
         });
-      })
-      .catch(() => {
-        setIsLoadingDelete(false);
-      })
-      .finally(() => {
-        setIsLoadingDelete(false);
-      });
+    }
   };
 
-  const handleFetchTotalAmount = async () => {
-    const date = new Date(formikFilter.values.filteredDate);
-    const dayAfter = formikFilter.values.filteredDate
-      ? new Date(date.setDate(date.getDate() + 1))
-      : null;
-
+  const handleFetchTotalPayments = async () => {
     setIsLoadingTotal(true);
 
     await backendAuthApi({
-      url: BACKEND_API.INVOICE_TOTAL_CRED_PAYMENTS,
+      url: BACKEND_API.PAYMENTS_TOTAL,
       method: 'POST',
       cancelToken: sourceToken.token,
-      data: { filteredDate: dayAfter },
+      data: formikFilter.values,
     })
       .then((res) => {
-        if (responseUtil.isResponseSuccess(res.data.responseCode)) {
-          setTotalPayments(res.data.responseData);
+        const data = res.data;
+
+        if (responseUtil.isResponseSuccess(data.responseCode)) {
+          setTotalPayments(data.responseData);
         }
       })
       .catch(() => {
@@ -269,27 +230,24 @@ const PaymentsController = () => {
   };
 
   const handleFetchPayments = async () => {
-    const date = new Date(formikFilter.values.filteredDate);
-    const dayAfter = formikFilter.values.filteredDate
-      ? new Date(date.setDate(date.getDate() + 1))
-      : null;
-
     setIsLoading(true);
 
     await backendAuthApi({
-      url: BACKEND_API.CREDITORS_INVOICES,
+      url: BACKEND_API.PAYMENTS,
       method: 'POST',
       cancelToken: sourceToken.token,
       params: {
         page: page,
         limit: rowsPerPage,
       },
-      data: { filteredDate: dayAfter },
+      data: formikFilter.values,
     })
       .then((res) => {
-        if (responseUtil.isResponseSuccess(res.data.responseCode)) {
-          setInvoices(res.data.responseData.invoices);
-          setCount(res.data.responseData.count);
+        const data = res.data;
+
+        if (responseUtil.isResponseSuccess(data.responseCode)) {
+          setInvoices(data.responseData.invoices);
+          setCount(data.responseData.documentCount);
         }
       })
       .catch(() => {
@@ -301,44 +259,38 @@ const PaymentsController = () => {
   };
 
   useEffect(() => {
+    handleFetchTotalPayments();
     handleFetchPayments();
-    handleFetchTotalAmount();
-
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [formikFilter.values.filteredDate, page, rowsPerPage]);
+  }, [formikFilter.values.filteredDate, page]);
 
   return (
     <PaymentsView
       headerLabels={headerLabels}
+      setSelectedInvoiceId={setSelectedInvoiceId}
+      formik={formik}
+      formikFilter={formikFilter}
       invoices={invoices}
       totalPayments={totalPayments}
+      isAdd={isAdd}
+      isOpenAddUpdate={isOpenAddUpdate}
+      isOpenDelete={isOpenDelete}
       isLoading={isLoading}
       isLoadingTotal={isLoadingTotal}
-      setSelectedInvoice={setSelectedInvoice}
-      searchTerm={searchTerm}
-      handleSearchInputChange={handleSearchInputChange}
-      filteredData={filteredData}
-      formik={formik}
-      formikPayInvoice={formikPayInvoice}
-      isOpenAdd={isOpenAdd}
-      isOpenUpdate={isOpenUpdate}
-      isOpenDelete={isOpenDelete}
-      isLoadingAddPayment={isLoadingAddPayment}
+      isLoadingAdd={isLoadingAdd}
       isLoadingUpdate={isLoadingUpdate}
       isLoadingDelete={isLoadingDelete}
+      handleChangePage={handleChangePage}
+      handleChangeRowsPerPage={handleChangeRowsPerPage}
       handleOpenCloseAddDialog={handleOpenCloseAddDialog}
       handleOpenCloseUpdateDialog={handleOpenCloseUpdateDialog}
       handleOpenCloseDeleteDialog={handleOpenCloseDeleteDialog}
-      handleSubmitAddPayment={handleSubmitAddPayment}
-      handleSubmitUpdate={handleSubmitUpdate}
-      handleSubmitDelete={handleSubmitDelete}
-      handleFetchPayments={handleFetchPayments}
-      formikFilter={formikFilter}
+      handleAddPaymentSubmit={handleAddPaymentSubmit}
+      handleUpdatePaymentSubmit={handleUpdatePaymentSubmit}
+      handleDeletePaymentSubmit={handleDeletePaymentSubmit}
       page={page}
       count={count}
       rowsPerPage={rowsPerPage}
-      handleChangePage={handleChangePage}
-      handleChangeRowsPerPage={handleChangeRowsPerPage}
     />
   );
 };

@@ -23,4 +23,8 @@ export const NAVIGATION_ROUTES = {
     base: '/payments',
     view: 'payments',
   },
+  credPayments: {
+    base: '/credPayments',
+    view: 'credPayments',
+  },
 };

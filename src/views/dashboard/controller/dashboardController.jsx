@@ -43,10 +43,18 @@ const DashboardController = () => {
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
   const [dueInvocies, setDueInvoices] = useState([]);
+  const [totalBalance, setTotalBalance] = useState(0);
+  const [totalCreditPayments, setTotalCreditPayments] = useState(0);
+  const [totalCashBalance, setTotalCashBalance] = useState(0);
+  const [totalPayments, setTotalPayments] = useState(0);
 
   const [openSelectDate, setOpenSelectdate] = useState(false);
 
   const [isLoadingDueInvoices, setIsLoadingDueInvocies] = useState(true);
+  const [isLoadingTb, setIsLoadingTb] = useState(false);
+  const [isLoadingTcp, setIsLoadingTcp] = useState(false);
+  const [isLoadingCb, setIsLoadingCb] = useState(false);
+  const [isLoadingTp, setIsLoadingTp] = useState(false);
 
   const currentDate = new Date();
   const futureDate = new Date(currentDate);
@@ -116,7 +124,101 @@ const DashboardController = () => {
       });
   };
 
+  const handleFetchTotalBalanceStat = async () => {
+    setIsLoadingTb(true);
+
+    await backendAuthApi({
+      url: BACKEND_API.SBOOK_CASHB_TOTAL,
+      method: 'GET',
+      cancelToken: sourceToken.token,
+    })
+      .then((res) => {
+        if (responseUtil.isResponseSuccess(res.data.responseCode)) {
+          setTotalBalance(res.data.responseData);
+        }
+      })
+      .catch(() => {
+        setIsLoadingTb(false);
+      })
+      .finally(() => {
+        setIsLoadingTb(false);
+      });
+  };
+
+  const handleFetchTotalCreditorPaymentsStat = async () => {
+    setIsLoadingTcp(true);
+
+    await backendAuthApi({
+      url: BACKEND_API.INVOICE_TOTAL_CRED_PAYMENTS,
+      method: 'POST',
+      cancelToken: sourceToken.token,
+      data: { filteredDate: null },
+    })
+      .then((res) => {
+        if (responseUtil.isResponseSuccess(res.data.responseCode)) {
+          setTotalCreditPayments(res.data.responseData);
+        }
+      })
+      .catch(() => {
+        setIsLoadingTcp(false);
+      })
+      .finally(() => {
+        setIsLoadingTcp(false);
+      });
+  };
+
+  const handleFetchTotalCashBalanceStat = async () => {
+    setIsLoadingCb(true);
+
+    await backendAuthApi({
+      url: BACKEND_API.SBOOK_CASHB,
+      method: 'POST',
+      cancelToken: sourceToken.token,
+      data: { filteredDate: new Date() },
+    })
+      .then((res) => {
+        if (responseUtil.isResponseSuccess(res.data.responseCode)) {
+          setTotalCashBalance(res.data.responseData);
+        }
+      })
+      .catch(() => {
+        setIsLoadingCb(false);
+      })
+      .finally(() => {
+        setIsLoadingCb(false);
+      });
+  };
+
+  const handleFetchTotalPaymentsStat = async () => {
+    setIsLoadingTp(true);
+
+    await backendAuthApi({
+      url: BACKEND_API.PAYMENTS_TOTAL,
+      method: 'POST',
+      cancelToken: sourceToken.token,
+      data: { filteredDate: new Date() },
+    })
+      .then((res) => {
+        const data = res.data;
+
+        if (responseUtil.isResponseSuccess(data.responseCode)) {
+          setTotalPayments(data.responseData);
+        }
+      })
+      .catch(() => {
+        setIsLoadingTp(false);
+      })
+      .finally(() => {
+        setIsLoadingTp(false);
+      });
+  };
+
   useEffect(() => {
+    handleFetchTotalBalanceStat();
+    handleFetchTotalCreditorPaymentsStat();
+    handleFetchTotalCashBalanceStat();
+    handleFetchTotalPaymentsStat();
+
     handleFetchDueInvoices();
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -124,6 +226,14 @@ const DashboardController = () => {
 
   return (
     <DashboardView
+      totalBalance={totalBalance}
+      totalCreditPayments={totalCreditPayments}
+      totalCashBalance={totalCashBalance}
+      totalPayments={totalPayments}
+      isLoadingTb={isLoadingTb}
+      isLoadingTcp={isLoadingTcp}
+      isLoadingCb={isLoadingCb}
+      isLoadingTp={isLoadingTp}
       isLoadingDueInvoices={isLoadingDueInvoices}
       dueInvocies={dueInvocies}
       headersDueInvoice={headersDueInvoice}

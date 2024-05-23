@@ -12,7 +12,7 @@ import Label from 'src/components/label';
 import { PAYMENT_STATUS } from 'src/constants/commonConstants';
 import { formatCurrency } from 'src/utils/format-number';
 import { fDate } from 'src/utils/format-time';
-import { PaymentInvoices } from 'src/views/payments/components/creditPayments';
+import { PaymentInvoices } from 'src/views/creditorPayments/components/creditPayments';
 
 const HistoryRow = ({ payment }) => {
   return (

@@ -25,16 +25,14 @@ const validationSchemaInvoice = Yup.object().shape({
   invoiceNoFrom: Yup.number().required('From invoice no required').min(1),
   invoiceNoTo: Yup.number().required('To invoice no required').min(1),
   invoiceDescription: Yup.string().nullable,
-  invoiceInAmount: Yup.number().required('Amount in required').min(0),
-  invoiceOutAmount: Yup.number().required('Amount out required').min(0),
+  invoiceAmount: Yup.number().required('Amount is required').min(0),
   invoiceCreatedAt: Yup.date().required('Invoice date required'),
 });
 
 const validationSchemaInvoiceSingle = Yup.object().shape({
   invoiceNo: Yup.number().required('From invoice no required').min(1),
   invoiceDescription: Yup.string().nullable,
-  invoiceInAmount: Yup.number().required('Amount in required').min(0),
-  invoiceOutAmount: Yup.number().required('Amount out required').min(0),
+  invoiceAmount: Yup.number().required('Amount is required').min(0),
   invoiceCreatedAt: Yup.date().required('Invoice date required'),
 });
 
@@ -44,18 +42,10 @@ const SalesBookController = () => {
     'Invoice To',
     'Description',
     'Invoiced Date',
-    'Amount In',
-    'Amount Out',
+    'Amount',
     'Action',
   ];
-  const invoiceHeadersSingle = [
-    'Invoice No',
-    'Description',
-    'Invoiced Date',
-    'Amount In',
-    'Amount Out',
-    'Action',
-  ];
+  const invoiceHeadersSingle = ['Invoice No', 'Description', 'Invoiced Date', 'Amount', 'Action'];
 
   const { enqueueSnackbar } = useSnackbar();
   const sourceToken = axios.CancelToken.source();
@@ -110,8 +100,7 @@ const SalesBookController = () => {
       invoiceNoFrom: 1,
       invoiceNoTo: 1,
       invoiceDescription: '',
-      invoiceInAmount: 0,
-      invoiceOutAmount: 0,
+      invoiceAmount: 0,
       invoiceCreatedAt: new Date(),
     },
     validationSchema: validationSchemaInvoice,
@@ -124,8 +113,7 @@ const SalesBookController = () => {
     initialValues: {
       invoiceNo: 1,
       invoiceDescription: '',
-      invoiceInAmount: 0,
-      invoiceOutAmount: 0,
+      invoiceAmount: 0,
       invoiceCreatedAt: new Date(),
     },
     validationSchema: validationSchemaInvoiceSingle,
@@ -213,15 +201,13 @@ const SalesBookController = () => {
         formikInvoice.setValues({
           invoiceNoFrom: selectedInvoice.invoiceNoFrom,
           invoiceNoTo: selectedInvoice.invoiceNoTo,
-          invoiceInAmount: selectedInvoice.invoiceInAmount,
-          invoiceOutAmount: selectedInvoice.invoiceOutAmount,
+          invoiceAmount: selectedInvoice.invoiceAmount,
           invoiceCreatedAt: new Date(selectedInvoice.invoiceCreatedAt),
         });
       } else {
         formikInvoiceSingle.setValues({
           invoiceNo: selectedInvoice.invoiceNo,
-          invoiceInAmount: selectedInvoice.invoiceInAmount,
-          invoiceOutAmount: selectedInvoice.invoiceOutAmount,
+          invoiceAmount: selectedInvoice.invoiceAmount,
           invoiceCreatedAt: new Date(selectedInvoice.invoiceCreatedAt),
         });
       }
@@ -280,10 +266,10 @@ const SalesBookController = () => {
 
   const handleFetchInvoices = async () => {
     if (selectedBook) {
-      const date = new Date(formikFilter.values.filteredDate);
-      const dayAfter = formikFilter.values.filteredDate
-        ? new Date(date.setDate(date.getDate() + 1))
-        : null;
+      // const date = new Date(formikFilter.values.filteredDate);
+      // const dayAfter = formikFilter.values.filteredDate
+      //   ? new Date(date.setDate(date.getDate() + 1))
+      //   : null;
 
       setIsLoadingInvoices(true);
 
@@ -295,7 +281,11 @@ const SalesBookController = () => {
           limit: rowsPerPage,
         },
         cancelToken: sourceToken.token,
-        data: { filteredDate: dayAfter },
+        data: {
+          filteredDate: formikFilter.values.filteredDate
+            ? new Date(formikFilter.values.filteredDate)
+            : null,
+        },
       })
         .then((res) => {
           if (responseUtil.isResponseSuccess(res.data.responseCode)) {
@@ -313,10 +303,10 @@ const SalesBookController = () => {
   };
 
   const handleFetchSalesBookStats = async () => {
-    const date = new Date(formikFilter.values.filteredDate);
-    const dayAfter = formikFilter.values.filteredDate
-      ? new Date(date.setDate(date.getDate() + 1))
-      : null;
+    // const date = new Date(formikFilter.values.filteredDate);
+    // const dayAfter = formikFilter.values.filteredDate
+    //   ? new Date(date.setDate(date.getDate() + 1))
+    //   : null;
 
     setIsLoadingInvoicesStats(true);
 
@@ -324,7 +314,11 @@ const SalesBookController = () => {
       url: `${BACKEND_API.INVOICE_STATS_AMOUNT + selectedBook._id}/${selectedBook.bookType}`,
       method: 'POST',
       cancelToken: sourceToken.token,
-      data: { filteredDate: dayAfter },
+      data: {
+        filteredDate: formikFilter.values.filteredDate
+          ? new Date(formikFilter.values.filteredDate)
+          : null,
+      },
     })
       .then((res) => {
         if (responseUtil.isResponseSuccess(res.data.responseCode)) {
@@ -406,6 +400,7 @@ const SalesBookController = () => {
             handleOpenCloseAddInvoiceDialog();
             handleFetchInvoices();
             handleFetchSalesBookStats();
+            handleFetchCashBalance();
           }
           enqueueSnackbar(res.data.responseMessage, {
             variant: responseUtil.findResponseType(res.data.responseCode),
@@ -451,6 +446,7 @@ const SalesBookController = () => {
             handleOpenCloseUpdateInvoiceDialog();
             handleFetchInvoices();
             handleFetchSalesBookStats();
+            handleFetchCashBalance();
           }
           enqueueSnackbar(res.data.responseMessage, {
             variant: responseUtil.findResponseType(res.data.responseCode),
@@ -481,6 +477,7 @@ const SalesBookController = () => {
             handleOpenCloseDeleteInvoiceDialog();
             handleFetchInvoices();
             handleFetchSalesBookStats();
+            handleFetchCashBalance();
           }
           enqueueSnackbar(res.data.responseMessage, {
             variant: responseUtil.findResponseType(res.data.responseCode),
@@ -575,8 +572,9 @@ const SalesBookController = () => {
 
     await backendAuthApi({
       url: BACKEND_API.SBOOK_CASHB,
-      method: 'GET',
+      method: 'POST',
       cancelToken: sourceToken.token,
+      data: formikFilter.values,
     })
       .then((res) => {
         if (responseUtil.isResponseSuccess(res.data.responseCode)) {
