@@ -266,10 +266,10 @@ const SalesBookController = () => {
 
   const handleFetchInvoices = async () => {
     if (selectedBook) {
-      // const date = new Date(formikFilter.values.filteredDate);
-      // const dayAfter = formikFilter.values.filteredDate
-      //   ? new Date(date.setDate(date.getDate() + 1))
-      //   : null;
+      const date = new Date(formikFilter.values.filteredDate);
+      const dayAfter = formikFilter.values.filteredDate
+        ? new Date(date.setDate(date.getDate() + 1))
+        : null;
 
       setIsLoadingInvoices(true);
 
@@ -282,9 +282,7 @@ const SalesBookController = () => {
         },
         cancelToken: sourceToken.token,
         data: {
-          filteredDate: formikFilter.values.filteredDate
-            ? new Date(formikFilter.values.filteredDate)
-            : null,
+          filteredDate: dayAfter,
         },
       })
         .then((res) => {
@@ -303,10 +301,10 @@ const SalesBookController = () => {
   };
 
   const handleFetchSalesBookStats = async () => {
-    // const date = new Date(formikFilter.values.filteredDate);
-    // const dayAfter = formikFilter.values.filteredDate
-    //   ? new Date(date.setDate(date.getDate() + 1))
-    //   : null;
+    const date = new Date(formikFilter.values.filteredDate);
+    const dayAfter = formikFilter.values.filteredDate
+      ? new Date(date.setDate(date.getDate() + 1))
+      : null;
 
     setIsLoadingInvoicesStats(true);
 
@@ -315,9 +313,7 @@ const SalesBookController = () => {
       method: 'POST',
       cancelToken: sourceToken.token,
       data: {
-        filteredDate: formikFilter.values.filteredDate
-          ? new Date(formikFilter.values.filteredDate)
-          : null,
+        filteredDate: dayAfter,
       },
     })
       .then((res) => {
