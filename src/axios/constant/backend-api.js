@@ -41,6 +41,7 @@ export const BACKEND_API = {
   INVOICE_DELETE: IP_URL + 'invoice/delete/',
   INVOICE_DELETE_PAYMENT: IP_URL + 'invoice/delete-cred/',
   INVOICE_BY_BOOK: IP_URL + 'invoice/book/',
+  INVOICE_CRED_PAYMENTS: IP_URL + 'invoice/cred-payments',
   INVOICE_BULK: IP_URL + 'invoice/bulk-invoices/',
   INVOICE_TOTAL_CRED_PAYMENTS: IP_URL + 'invoice/cred-payment-total',
   INVOICE_STATS_AMOUNT: IP_URL + 'invoice/invoices-net/',
