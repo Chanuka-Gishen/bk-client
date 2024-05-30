@@ -33,6 +33,7 @@ import { DatePicker } from '@mui/x-date-pickers';
 import { CloseCircleFilled } from '@ant-design/icons';
 import { PaymentRow } from '../components/paymentRow';
 import { StatisticCard } from 'src/components/statCard';
+import { CreditPaymentUpdateDialog } from '../components/creditPayments/components/creditPaymentUpdateDialog';
 
 export const CredPaymentsView = ({
   headerLabels,
@@ -41,21 +42,16 @@ export const CredPaymentsView = ({
   isLoadingTotal,
   searchTerm,
   handleSearchInputChange,
-  filteredData,
   isLoading,
   formik,
-  formikPayInvoice,
-  isOpenAdd,
   isOpenUpdate,
   isOpenDelete,
-  isLoadingAddPayment,
   isLoadingUpdate,
   isLoadingDelete,
   setSelectedInvoice,
   handleOpenCloseAddDialog,
   handleOpenCloseUpdateDialog,
   handleOpenCloseDeleteDialog,
-  handleSubmitAddPayment,
   handleSubmitUpdate,
   handleSubmitDelete,
   handleFetchPayments,
@@ -129,7 +125,7 @@ export const CredPaymentsView = ({
                     <>
                       {invoices.length > 0 ? (
                         <>
-                          {filteredData.map((item, index) => (
+                          {invoices.map((item, index) => (
                             <PaymentRow
                               key={index}
                               invoice={item}
@@ -161,19 +157,10 @@ export const CredPaymentsView = ({
           </Card>
         </Grid>
       </Grid>
-      {isOpenAdd && (
-        <InvoicePaymentAddDialog
-          open={isOpenAdd}
-          formik={formikPayInvoice}
-          handleClose={handleOpenCloseAddDialog}
-          handleSubmit={handleSubmitAddPayment}
-          isLoading={isLoadingAddPayment}
-        />
-      )}
       {isOpenUpdate && (
-        <InvoiceUpdateDialog
-          open={isOpenUpdate}
+        <CreditPaymentUpdateDialog
           formik={formik}
+          open={isOpenUpdate}
           handleClose={handleOpenCloseUpdateDialog}
           handleSubmit={handleSubmitUpdate}
           isLoading={isLoadingUpdate}
